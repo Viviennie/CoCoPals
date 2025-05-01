@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@codemirror/state": ["./node_modules/@codemirror/state"]
+    },
+    "skipLibCheck": true,
+    "typeRoots": ["node_modules/@types"],
+    "types": ["node"],  // 只保留 "node"，移除 "axios"
+    "module": "ES2022",  // 或 "ESNext"
+    "target": "ES2017",  // 或更高版本
+    "moduleResolution": "node",
+    "strict": true
+  },
+  "include": ["src/**/*"]
+}

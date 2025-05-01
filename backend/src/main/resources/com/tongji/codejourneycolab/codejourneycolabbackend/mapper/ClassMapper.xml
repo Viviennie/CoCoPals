@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tongji.codejourneycolab.codejourneycolabbackend.mapper.ClassMapper">
+        <select id="getHomeworkList" resultType="com.tongji.codejourneycolab.codejourneycolabbackend.dto.HomeworkDto">
+                SELECT
+                problem_id,
+                due_time,
+                title,
+                status
+                FROM (
+                SELECT
+                h.question_id AS problem_id,
+                h.due_time,
+                q.title,
+                CASE
+                WHEN MAX(CASE WHEN CAST(s.state AS UNSIGNED) = 1 THEN 1 ELSE 0 END) = 1 THEN 'passed'
+                WHEN MAX(CASE WHEN CAST(s.state AS UNSIGNED) = 0 THEN 1 ELSE 0 END) = 1 THEN 'failed'
+                ELSE 'not tried'
+                END AS status,
+                @rn := IF(@prev_question_id = h.question_id, @rn + 1, 1) AS rn,
+                @prev_question_id := h.question_id
+                FROM
+                (SELECT @rn := 0, @prev_question_id := NULL) vars,
+                homework h
+                LEFT JOIN question q ON h.question_id = q.id
+                LEFT JOIN submission s ON h.question_id = s.question_id
+                AND s.user_id = #{studentId}
+                AND s.submit_time <![CDATA[<]]> h.due_time
+                                    WHERE
+                                    h.class_id = #{classId}
+                GROUP BY
+                h.question_id, h.due_time, q.title
+                ORDER BY
+                h.question_id, h.due_time ASC
+                ) t
+                WHERE rn = 1;
+        </select>
+
+        <select id="getStuHomework" resultType="com.tongji.codejourneycolab.codejourneycolabbackend.dto.StuStatusDto">
+                SELECT
+                s.id AS studentId,
+                s.username AS name,
+                CASE
+                WHEN MAX(CASE WHEN CAST(sub.state AS UNSIGNED) = 1 THEN 1 ELSE 0 END) = 1 THEN 'passed'
+                WHEN MAX(CASE WHEN CAST(sub.state AS UNSIGNED) = 0 THEN 1 ELSE 0 END) = 1 THEN 'failed'
+                WHEN COUNT(sub.attempt_num) = 0 THEN 'not tried'
+                ELSE 'unknown'  -- 你可以添加默认的“未知”状态
+                END AS status
+                FROM
+                user s
+                LEFT JOIN user_class uc ON s.id = uc.user_id
+                LEFT JOIN homework h ON uc.class_id = h.class_id
+                LEFT JOIN submission sub ON h.question_id = sub.question_id
+                AND sub.submit_time <![CDATA[<]]> h.due_time
+                                      AND sub.user_id = s.id
+                                      WHERE
+                                      h.class_id = #{classId}
+                AND h.question_id = #{problemId}
+                GROUP BY
+                s.id, s.username;
+
+        </select>
+
+</mapper>

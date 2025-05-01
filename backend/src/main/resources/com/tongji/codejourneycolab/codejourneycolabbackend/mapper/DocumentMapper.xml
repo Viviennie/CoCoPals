@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tongji.codejourneycolab.codejourneycolabbackend.mapper.DocumentMapper">
+    <!--获取编辑过的文档("我的文档")-->
+    <select id="getDocumentListByUserID" resultType="com.tongji.codejourneycolab.codejourneycolabbackend.entity.Document">
+        SELECT d.id, d.owner_id, d.title, d.create_time, d.last_modified_time
+        FROM document d
+                 JOIN user_document ud ON d.id = ud.document_id
+        WHERE ud.user_id = #{userId}
+        ORDER BY d.last_modified_time DESC
+    </select>
+
+</mapper>
+

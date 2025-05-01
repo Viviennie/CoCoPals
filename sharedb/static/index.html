@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareDB Client</title>
+</head>
+
+<body>
+    <h1>Shared Document Content</h1>
+    <div>
+        <label for="docName">Document Name:</label>
+        <input type="text" id="docName" />
+        <button onclick="connectToDocument()">Connect</button>
+    </div>
+    <div>
+        <textarea id="editor" rows="10" cols="50">Loading...</textarea>
+        <button onclick="updateContent()">Save Content</button>
+    </div>
+
+    <!-- 引入 browserify 打包后的 bundle.js -->
+    <script src="dist/bundle.js"></script>
+</body>
+
+</html>

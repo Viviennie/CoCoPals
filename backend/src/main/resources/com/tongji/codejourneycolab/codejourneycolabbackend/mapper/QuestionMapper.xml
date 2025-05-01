@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tongji.codejourneycolab.codejourneycolabbackend.mapper.QuestionMapper">
+    <!--获取题目列表-->
+    <select id="getQuestionList" resultType="com.tongji.codejourneycolab.codejourneycolabbackend.entity.Question">
+        select id, title, difficulty
+        from question;
+    </select>
+    <!--获取题目详情-->
+    <select id="getQuestionById" resultType="com.tongji.codejourneycolab.codejourneycolabbackend.entity.QuestionDetail">
+        select *
+        from question
+        where id = #{questionId};
+    </select>
+    <!--获取题目测试用例-->
+    <select id="getTestCaseListByQuestionId" resultType="com.tongji.codejourneycolab.codejourneycolabbackend.entity.TestCase">
+        <![CDATA[
+        select id, input, output
+        from test_case
+        where question_id=#{questionId}
+        order by id;
+        ]]>
+    </select>
+    <!--获取用户已做题目-->
+    <select id="getAttemptedQuestionList" resultType="com.tongji.codejourneycolab.codejourneycolabbackend.entity.QuestionSubmitted">
+        select q.id, q.title, q.description, q.difficulty, s.submit_time
+        from question q join submission s on s.question_id = q.id
+        join (
+            select question_id, max(submit_time) as max_submit_time
+            from submission
+            where user_id = #{userId}
+            group by question_id
+        ) latest_submission on s.question_id = latest_submission.question_id and s.submit_time = latest_submission.max_submit_time
+        where s.user_id = #{userId}
+        order by s.submit_time desc;
+    </select>
+    <!--获取题目状态（AC,WA,RE...）-->
+    <select id="getQuestionState">
+        select
+            case
+                when not exists (
+                    select 1
+                    from submission s
+                    where s.user_id = #{userId} and s.question_id = #{questionId}
+                ) then 3
+                when exists (
+                    select 1
+                    from submission s
+                    where s.user_id = #{userId} and s.question_id = #{questionId} and s.state = 1
+                ) then 1
+                else 2
+                end as state;
+    </select>
+    <!--获取单个题目的提交记录-->
+    <select id="getSubmissionList" resultType="com.tongji.codejourneycolab.codejourneycolabbackend.entity.Submission">
+        select attempt_num, submit_time, language, state, pass_count, total_time
+        from submission
+        where user_id = #{userId} and question_id = #{questionId}
+        order by submit_time desc;
+    </select>
+    <!--获取提交记录详情-->
+    <select id="getSubmission" resultType="com.tongji.codejourneycolab.codejourneycolabbackend.entity.SubmissionDetail">
+        select attempt_num, submit_time, language, state, pass_count, total_time, code, first_failure_output
+        from submission
+        where user_id = #{userId} and question_id = #{questionId} and attempt_num = #{attemptNum};
+    </select>
+    <select id="getSubmissionCount">
+        select count(attempt_num)
+        from submission
+        where question_id = #{questionId} and user_id = #{userId};
+    </select>
+    <insert id="addSubmission">
+        insert into submission
+        (question_id, user_id, attempt_num, submit_time, code, language, state, pass_count, total_time, first_failure_output)
+        values (#{questionId}, #{userId}, #{attemptNum}, #{submitTime}, #{code}, #{language}, #{state}, #{passCount}, #{totalTime}, #{firstFailureOutput})
+    </insert>
+</mapper>
+

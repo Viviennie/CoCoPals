@@ -1,0 +1,13 @@
+{
+	"server": {
+		"port": 4242,
+		"host": "localhost"
+	},
+	"timer": {
+		"max_idle_time": 20000,
+		"idle_check_interval": 5000000,
+		"auto_save_interval": 10000
+	},
+	"document_service_url": "http://localhost:8048/document/savecontent",
+	"jwt_token": "eyJhbGciOiJIUzM4NCJ9.eyJpZCI6LTQyNDIsImV4cCI6MTc0MDQ3Mzc0NH0.7Z65OCt9Fauju7hidqV6ZoXFgGL_KVknV7YD3raf7buKPXPuZ82D2GT__snXFddD"
+}

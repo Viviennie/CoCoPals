@@ -1,0 +1,49 @@
+{
+  "name": "coj",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@codemirror/lang-python": "^6.1.6",
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@element-plus/icons-vue": "^2.3.1",
+    "@mdi/font": "^7.4.47",
+    "@teamwork/websocket-json-stream": "^2.0.0",
+    "@wangeditor/editor": "^5.1.23",
+    "@wangeditor/editor-for-vue": "^5.1.12",
+    "axios": "^1.7.9",
+    "echarts": "^5.5.1",
+    "editor": "^1.0.0",
+    "element-plus": "^2.8.7",
+    "eventemitter3": "^5.0.1",
+    "events": "^3.3.0",
+    "markdown-it": "^14.1.0",
+    "markdown-it-highlightjs": "^4.2.0",
+    "reconnecting-websocket": "^4.4.0",
+    "sharedb": "^5.1.1",
+    "sortablejs": "^1.15.3",
+    "three": "^0.169.0",
+    "util": "^0.12.5",
+    "vue": "^3.5.12",
+    "vue-codemirror": "^6.1.1",
+    "vue-router": "^4.4.5",
+    "vue3-apexcharts": "^1.7.0",
+    "websocket-ts": "^2.1.5"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.4",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^22.9.0",
+    "@types/sharedb": "^5.1.0",
+    "@types/three": "^0.169.0",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.8",
+    "vue-tsc": "^2.1.6"
+  }
+}
