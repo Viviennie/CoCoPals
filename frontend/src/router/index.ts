@@ -14,11 +14,12 @@ const NormalOJ = () => import('../views/NormalOJ.vue');
 const MyProfile = () => import('../views/MyProfile.vue');
 const SubmissionDetail = () => import('../views/SubmissionDetail.vue');
 const ClassDetail = () => import('../views/ClassDetail.vue');
-const BlogHome = () => import('../views/BlogHome.vue');
-const BlogDetail = () => import('../views/BlogDetail.vue');
-const QADetail = () => import('../views/QADetail.vue');
-const MyBlog = () => import('../views/MyBlog.vue');
-const Editor = () => import('../views/Editor.vue');
+const ClassList = () => import('../views/ClassList.vue');
+// const BlogHome = () => import('../views/BlogHome.vue');
+// const BlogDetail = () => import('../views/BlogDetail.vue');
+// const QADetail = () => import('../views/QADetail.vue');
+// const MyBlog = () => import('../views/MyBlog.vue');
+// const Editor = () => import('../views/Editor.vue');
 
 // 定义路由
 const routes: Array<RouteRecordRaw> = [
@@ -93,6 +94,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ClassDetail',
     component: ClassDetail,
     meta: { requiresAuth: true } 
+  },
+  {
+    path: '/class',
+    name: 'ClassList',
+    component: ClassList,
+    meta: { requireAuth: true }
   }
 ];
 

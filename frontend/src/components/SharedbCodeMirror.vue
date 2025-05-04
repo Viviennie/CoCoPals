@@ -5,7 +5,7 @@
         <!-- 语言选择器 -->
         <div>
           <label for="language"><el-icon :style="iconStyle"><Place /></el-icon></label>
-          <el-select v-model="localSelectedLanguage" placeholder="language" size="small" style="width: 100px" @change="updateCM">
+          <el-select v-model="localSelectedLanguage" placeholder="选择语言" size="small" style="width: 100px" @change="updateCM">
             <el-option
               v-for="item in languageOptions"
               :key="item.value"
@@ -18,7 +18,7 @@
         <!-- 主题选择器 -->
         <div>
           <label for="theme"><el-icon :style="iconStyle"><Picture /></el-icon></label>
-          <el-select v-model="selectedTheme" placeholder="theme" size="small" style="width: 100px" @change="updateCM">
+          <el-select v-model="selectedTheme" placeholder="选择主题" size="small" style="width: 100px" @change="updateCM">
             <el-option
               v-for="item in themeOptions"
               :key="item.value"
@@ -41,7 +41,7 @@
     <codemirror
       :key="editorKey"
       v-model="localCode"
-      placeholder="Code goes here..."
+      placeholder="在此输入代码..."
       :style="{ width: props.width, height: props.height }"
       :autofocus="true"
       :indent-with-tab="true"
@@ -51,7 +51,7 @@
   </div>
   <!-- 弹窗展示邀请码 -->
   <el-dialog
-    title="Your Invitation Code"
+    title="您的邀请码"
     v-model="dialogVisible"
     width="400px"
   >
@@ -68,7 +68,7 @@
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="dialogVisible = false" type="primary">Close</el-button>
+        <el-button @click="dialogVisible = false" type="primary">关闭</el-button>
       </div>
     </template>
   </el-dialog>

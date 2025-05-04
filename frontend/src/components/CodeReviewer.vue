@@ -2,27 +2,27 @@
   <div>
     <!-- 运行测试按钮 -->
     <div class="btn">
-      <el-button @click="runTests" type="plain">commit</el-button>
+      <el-button @click="runTests" type="plain">提交</el-button>
     </div>
     
     <!-- 弹窗 -->
-    <el-dialog v-model="dialogVisible" title="Result" width="600">
+    <el-dialog v-model="dialogVisible" title="运行结果" width="600">
       <div v-if="submissionDetail">
-        <strong>This is your No.{{ submissionDetail.attemptNum }} try:</strong>
+        <strong>这是您的第{{ submissionDetail.attemptNum }}次尝试：</strong>
         <ul>
-          <li>Submitted at {{ submissionDetail.submitTime }} and cost {{ submissionDetail.totalTime }} seconds</li>
-          <li><strong>Language:</strong> {{ submissionDetail.language }}</li>
-          <li><strong>State:</strong> {{ getStateMessage(submissionDetail.state) }}</li>
-          <li><strong>Pass Count:</strong> {{ submissionDetail.passCount }}</li>
+          <li>提交于 {{ submissionDetail.submitTime }}，耗时 {{ submissionDetail.totalTime }} 秒</li>
+          <li><strong>编程语言：</strong> {{ submissionDetail.language }}</li>
+          <li><strong>运行状态：</strong> {{ getStateMessage(submissionDetail.state) }}</li>
+          <li><strong>通过用例数：</strong> {{ submissionDetail.passCount }}</li>
           <li v-if="submissionDetail.firstFailureOutput">
-            <strong>First Failure Output:</strong> {{ submissionDetail.firstFailureOutput }}
+            <strong>首个失败用例输出：</strong> {{ submissionDetail.firstFailureOutput }}
           </li>
         </ul>
       </div>
       
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false" type="primary">Close</el-button>
+          <el-button @click="dialogVisible = false" type="primary">关闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -46,13 +46,13 @@ const submissionDetail = ref<any>(null);  // 存储提交的详细信息
 
 // 状态映射
 const stateMessages:any = {
-  1: 'Correct',
-  2: 'Compile Error',
-  3: 'Wrong Answer'
+  1: '正确',
+  2: '编译错误',
+  3: '答案错误'
 };
 
 const getStateMessage = (state: number) => {
-  return stateMessages[state] || 'Unknown State';
+  return stateMessages[state] || '未知状态';
 };
 
 // 运行用户代码并与测试用例进行比较
@@ -71,7 +71,7 @@ const runTests = async () => {
 
     // 后端返回的结果
     const result = response.data;
-    console.log('Success', result);
+    console.log('成功', result);
     
     // 将后端返回的提交详情更新到前端
     submissionDetail.value = result;
@@ -81,23 +81,21 @@ const runTests = async () => {
 
   } catch (error: any) {
     submissionDetail.value = { 
-      error: `Error: ${error.message}` 
+      error: `错误：${error.message}` 
     };
     dialogVisible.value = true;
   }
 };
 </script>
 
-  
-  <style scoped>
-  .btn {
-    display: flex;
-    justify-content: flex-end;
-    margin: 10px;
-  }
+<style scoped>
+.btn {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px;
+}
 
-  .dialog-footer {
-    text-align: right;
-  }
-  </style>
-  
+.dialog-footer {
+  text-align: right;
+}
+</style>

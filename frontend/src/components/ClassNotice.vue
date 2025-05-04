@@ -1,150 +1,150 @@
 <template>
-    <el-button
-        v-if="identity === 'TEACHER'"
-        class="create-button"
-        size="large"
-        type="primary"
-        :icon="Plus"
-        @click="openDialog_create()"
+  <el-button
+      v-if="identity === 'TEACHER'"
+      class="invite-button"
+      size="large"
+      type="primary"
+      :icon="Plus"
+      @click="inviteOthers()"
+  >
+      邀请
+  </el-button>
+  <el-table :data="filterTableData" stripe="true" style="width: 100%">
+      <el-table-column label="姓名" prop="name" />
+      <el-table-column label="邮箱" prop="email" />
+      <el-table-column align="right">
+          <template #header>
+            <el-input v-model="search" size="small" placeholder="输入搜索内容" />
+          </template>
+          <template #default="scope">
+            <el-button size="small" type="primary" @click="handleChat(scope.$index, scope.row)">
+              聊天
+            </el-button>
+          </template>
+        </el-table-column>
+  </el-table>
+
+  <!-- 弹窗展示邀请码 -->
+  <el-dialog
+    title="您的邀请码"
+    v-model="dialogVisible"
+    width="400px"
+  >
+  <div style="display: flex;justify-content: space-around;align-items: center;">
+    <p>{{ inviteCode }}</p>
+    <el-button 
+      type="primary"
+      circle
+      @click="copyInviteCode" 
+      :disabled="!inviteCode"
     >
-        Create
+    <el-icon><CopyDocument /></el-icon>
     </el-button>
-    <div class="demo-collapse">
-      <el-collapse v-model="activeNames" @change="handleChange">
-        <el-collapse-item v-for="section in contents" :key="section.id" :title="section.title" :name="section.id">
-            <div class="content">
-                <div>{{ section.item.text }}</div>
-                <div class="meta">
-                <span class="time">{{ section.item.time }}</span>
-                <span class="author">Author: {{ section.item.author }}</span>
-                </div>
-            </div>
-        </el-collapse-item>
-      </el-collapse>
+  </div>
+  <template #footer>
+    <div class="dialog-footer">
+      <p style="color: red;font-size: small;">注意：10分钟内有效</p>
+      <el-button @click="dialogVisible = false" type="primary">关闭</el-button>
     </div>
-
-    <!-- 创建通知弹窗 -->
-    <el-dialog
-    title="Create Notice"
-    v-model="isDialogVisible_create"
-    width="60%"
-    >
-    <el-input v-model="title" placeholder="Title..."></el-input>
-    <div style="margin: 20px 0" />
-    <el-input v-model="content" placeholder="Content..." type="textarea" maxlength="100" show-word-limit></el-input>
-    <template #footer>
-        <div class="dialog-footer">
-        <el-button @click="isDialogVisible_create = false">cancel</el-button>
-        <el-button type="primary" @click="handleCreate()">save</el-button>
-        </div>
-    </template>
-    </el-dialog>
   </template>
-  
-  <script lang="ts" setup>
-  import { ref, onMounted } from 'vue'
-  import { ElMessage, type CollapseModelValue } from 'element-plus'
-  import axios from 'axios';
-  import { Plus } from '@element-plus/icons-vue';
+  </el-dialog>
+</template>
 
-  // Props 接收从父组件传递过来的数据
-  const props = defineProps<{ 
-    classId: number;
-  }>();
-  
-  const identity = localStorage.getItem('role');
-  const classId = ref(props.classId);
-  const contents = ref<{ id: string; title: string; item: { text: string; time: string; author: string } }[]>([])
-  const activeNames = ref(['1'])
-  const handleChange = (val: CollapseModelValue) => {
-  }
+<script lang="ts" setup>
+import { CopyDocument, Plus } from '@element-plus/icons-vue';
+import { ref, computed, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import axios from 'axios';
 
-  // 从后端获取通知列表数据
-const fetchNotifications = async () => {
-  try {
-    const response = await axios.get(`http://localhost:8048/class/getNotice?classId=${classId.value}`) 
-    const notifications = response.data;
+const identity = localStorage.getItem('role');
+// const identity=ref('TEACHER');
 
-    contents.value = notifications.map((notification: any, index: number) => ({
-      id: `${index + 1}`,
-      title: notification.title,
-      item: {
-        text: notification.content,
-        time: notification.createTime,
-        author: notification.teacherName,
-      },
-    }))
-  } catch (error) {
-    console.error('Error fetching notifications:', error)
-  }
+interface Stu {
+username: string;
+email: string;
+}
+const tableData = ref<Stu[]>([]);
+const search = ref('')
+const filterTableData = computed(() =>
+tableData.value.filter(
+    (data:any) =>
+    !search.value ||
+    data.ownerName.toLowerCase().includes(search.value.toLowerCase()) ||
+    data.title.toLowerCase().includes(search.value.toLowerCase())
+)
+);
+
+// 获取班级成员列表
+const fetchStuList = async()=> {
+try {
+  const response = await axios.get(`http://localhost:8048/class/getstulist?classId=${classId.value}`);
+  tableData.value = response.data.map((item:Stu) => ({
+    name: item.username,
+    email: item.email,
+  }));
+} catch (error) {
+  console.error('获取列表失败:', error);
+  ElMessage.error('获取列表失败');
+}
 }
 
-  onMounted(() => {
-    fetchNotifications()
-  })
+onMounted(async () => {
+fetchStuList();
+});
 
-  // 创建通知
-  const isDialogVisible_create = ref(false);
-  const title = ref<string>("");
-  const content = ref<string>("");
+// Props 接收从父组件传递过来的数据
+const props = defineProps<{ 
+classId: number;
+}>();
 
-  const openDialog_create = () => {
-    isDialogVisible_create.value = true;
-  };
+const classId = ref(props.classId);
+const inviteCode = ref<string>('');
+const dialogVisible = ref(false);
 
-  const handleCreate = async () => {
-    if (!title.value.trim()||!title.value.trim()) {
-      ElMessage.warning('title or content cannot be empty!');
-      return;
-    }
-
+const inviteOthers= async()=> {
+if (classId.value !== null) {
     try {
-      const response = await axios.post(
-        `http://localhost:8048/class/createNotice`,
+    const response = await axios.post(
+        `http://localhost:8048/class/generatecode?classId=${classId.value}`,
         {
-          classId: classId.value,
-          title: title.value,
-          content: content.value
-        },
-        {
-          headers: {
+        headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
         }
-      );
-      ElMessage.success('Created!');
-      fetchNotifications();
+        }
+    );
+    inviteCode.value = response.data;
+    console.log("成功生成邀请码!");
+    dialogVisible.value = true; 
     } catch (error:any) {
-      console.error("Error:", error.response || error.message);
-      ElMessage.error('Failed to create notice.');
-    } finally {
-      isDialogVisible_create.value = false; 
+    if(error.response){
+        ElMessage.error('错误：请检查Redis服务器');
     }
-  };
-  </script>
+    console.error('获取邀请码失败:', error);
+    inviteCode.value = '';
+    }
+}
+}
+
+// 复制邀请码到剪贴板
+const copyInviteCode = () => {
+if (inviteCode.value) {
+    // 使用 Clipboard API 替代 execCommand
+    navigator.clipboard.writeText(inviteCode.value)
+    .then(() => {
+        ElMessage.success('已复制!');
+    })
+    .catch((err) => {
+        console.error('复制失败:', err);
+    });
+}
+};
+
+</script>
 
 <style scoped>
-.demo-collapse {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.content {
-  margin-bottom: 16px;
-}
-
-.meta {
-  font-size: 12px; /* 小字 */
-  color: #666; /* 灰色 */
-  margin-top: 8px;
-}
-
-.time {
-  margin-right: 8px;
-}
-
-.author {
-  font-style: italic; /* 斜体 */
+.dialog-footer {
+display: flex;
+justify-content: space-between;
+align-items: center;
 }
 </style>
-  

@@ -1,290 +1,271 @@
 <template>
-    <StickyNavbar/>
-    <ThemeSelector :initialTheme="currentTheme" />
-    <div class="wrapper-out"> 
-    <div class="wrapper-my">
-      <div class="wrapper-left">
-        <UserCard 
-        :user="user"
-        :activeSection="activeSection"
-        @update:activeSection="setActiveSection"
-        />
-        <div>I want to
-          <el-button
-            type="primary"
-            @click="dialogVisible = true"
-            link
-          >
-            logout
-          </el-button>
-        </div>
-        <el-dialog
-          title="Confirm Logout"
-           v-model="dialogVisible"
-          width="30%"
+  <StickyNavbar/>
+  <ThemeSelector :initialTheme="currentTheme" />
+  <div class="wrapper-out"> 
+  <div class="wrapper-my">
+    <div class="wrapper-left">
+      <UserCard 
+      :user="user"
+      :activeSection="activeSection"
+      @update:activeSection="setActiveSection"
+      />
+      <div>我想
+        <el-button
+          type="primary"
+          @click="dialogVisible = true"
+          link
         >
-          <p>Are you sure you want to log out?</p>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="logout">Confirm</el-button>
-          </span>
-        </el-dialog>
+          退出登录
+        </el-button>
+      </div>
+      <el-dialog
+        title="确认退出"
+         v-model="dialogVisible"
+        width="30%"
+      >
+        <p>确定要退出登录吗？</p>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="logout">确认</el-button>
+        </span>
+      </el-dialog>
+    </div>
+
+    <div class="wrapper-right">
+      <div class="motto-container">
+        <Motto :motto="userMotto"
+        @update:motto="updateUserMotto" />
       </div>
 
-      <div class="wrapper-right">
-        <div class="motto-container">
-          <Motto :motto="userMotto"
-          @update:motto="updateUserMotto" />
+      <div class="content-section">
+        <div v-if="activeSection === 'profile'">
+          <el-card class="profile-card">
+            <!-- 头像和编辑图标 -->
+            <div class="profile-avatar">
+              <img src="/avatar.png" alt="头像" class="avatar" />
+              <el-icon class="edit-icon" @click="toggleEdit"><Edit /></el-icon>
+            </div>
+
+            <!-- 个人信息输入表单 -->
+            <div class="profile-info">
+              <div class="info-item">
+                <span class="label">昵称:</span>
+                <el-input v-model="user.nickname" :disabled="!isEditing" placeholder="请输入昵称" class="input"></el-input>
+              </div>
+              <div class="info-item">
+                <span class="label">性别:</span>
+                <el-radio-group v-model="user.gender" size="small" :disabled="true" class="gender-group">
+                  <el-radio-button label="male" class="gender-radio male">男</el-radio-button>
+                  <el-radio-button label="female" class="gender-radio female">女</el-radio-button>
+                </el-radio-group>
+              </div>
+            
+              <div class="info-item">
+                <span class="label">生日:</span>
+                  <el-date-picker
+                    v-model="user.birthday"
+                    type="date"
+                    :disabled="true"
+                    placeholder="选择生日"
+                    class="input date-picker"
+                  ></el-date-picker>
+              </div>
+
+              <div class="info-item">
+                <span class="label">学校:</span>
+                <el-input v-model="user.school" :disabled="true" placeholder="请输入学校" class="input"></el-input>
+              </div>
+
+              <div class="info-item">
+                <span class="label">Github:</span>
+                <el-input v-model="user.github" :disabled="true" placeholder="请输入Github地址" class="input"></el-input>
+              </div>
+
+              <!-- 保存按钮 -->
+              <el-button v-if="isEditing" type="primary" @click="saveChanges" class="save-button">保存</el-button>
+            </div>
+          </el-card>
         </div>
-
-        <div class="content-section">
-          <div v-if="activeSection === 'profile'">
-            <el-card class="profile-card">
-              <!-- 头像和编辑图标 -->
-              <div class="profile-avatar">
-                <img src="/avatar.png" alt="Avatar" class="avatar" />
-                <el-icon class="edit-icon" @click="toggleEdit"><Edit /></el-icon>
-              </div>
-
-              <!-- 个人信息输入表单 -->
-              <div class="profile-info">
-                <div class="info-item">
-                  <span class="label">Nickname:</span>
-                  <el-input v-model="user.nickname" :disabled="!isEditing" placeholder="Enter your nickname" class="input"></el-input>
-                </div>
-                <!-- :disabled="!isEditing" -->
-                <div class="info-item">
-                  <span class="label">Gender:</span>
-                  <el-radio-group v-model="user.gender" size="small" :disabled="true" class="gender-group">
-                    <el-radio-button label="male" class="gender-radio male">Male</el-radio-button>
-                    <el-radio-button label="female" class="gender-radio female">Female</el-radio-button>
-                  </el-radio-group>
-                </div>
-              
-                <div class="info-item">
-                  <span class="label">Birthday:</span>
-                  <!-- 使用 el-date-picker 并添加自定义图标 -->
-                    <el-date-picker
-                      v-model="user.birthday"
-                      type="date"
-                      :disabled="true"
-                      placeholder="Select birthday"
-                      class="input date-picker"
-                    ></el-date-picker>
-                </div>
-
-                <div class="info-item">
-                  <span class="label">School:</span>
-                  <el-input v-model="user.school" :disabled="true" placeholder="Enter your school" class="input"></el-input>
-                </div>
-
-                <div class="info-item">
-                  <span class="label">Github:</span>
-                  <el-input v-model="user.github" :disabled="true" placeholder="Enter your Github URL" class="input"></el-input>
-                </div>
-
-                <!-- 保存按钮 -->
-                <el-button v-if="isEditing" type="primary" @click="saveChanges" class="save-button">Save</el-button>
-              </div>
-            </el-card>
+        <div v-else-if="activeSection === 'activity'">
+          <div class="activities-container">
+            <ActivityCard/>
           </div>
-          <div v-else-if="activeSection === 'activity'">
-            <!-- <div class="radar-chart-container">
-              <RadarChart/>
-            </div>
-            <div class="calendar-container">
-              <Calendar/>
-            </div>   -->
-            <div class="activities-container">
-              <ActivityCard/>
-            </div>
-          </div>
-          <div v-if="activeSection === 'class'">
-            <div class="classes-container">
-              <ClassCard/>
-            </div>
+        </div>
+        <div v-if="activeSection === 'class'">
+          <div class="classes-container">
+            <ClassCard/>
           </div>
         </div>
       </div>
     </div>
   </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
-  import StickyNavbar from '../components/Navbar.vue';
-  import UserCard from '../components/UserCard.vue';
-  import Motto from '../components/Motto.vue';
-  import RadarChart from '../components/RadarChart.vue';
-  import Calendar from '../components/Calendar.vue';
-  import { Edit } from '@element-plus/icons-vue'
-  import ActivityCard from '../components/Activities.vue';
-  import ClassCard from '../components/Classes.vue';
-  import { ElCard } from 'element-plus';
-  import axios from 'axios';
-  import { ElMessage, ElDialog, ElButton } from 'element-plus';
+</div>
+</template>
 
-  const dialogVisible = ref(false) // 控制弹窗是否显示
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import StickyNavbar from '../components/Navbar.vue';
+import UserCard from '../components/UserCard.vue';
+import Motto from '../components/Motto.vue';
+import RadarChart from '../components/RadarChart.vue';
+import Calendar from '../components/Calendar.vue';
+import { Edit } from '@element-plus/icons-vue'
+import ActivityCard from '../components/Activities.vue';
+import ClassCard from '../components/Classes.vue';
+import { ElCard } from 'element-plus';
+import axios from 'axios';
+import { ElMessage, ElDialog, ElButton } from 'element-plus';
 
-  // 定义当前主题
-  const currentTheme = ref({
-    background: '#1A1A2E',
-    color: '#FFFFFF',
-    primaryColor: '#0F3460'
-  });
-  
-  // 定义用户信息
-  const user = ref({
-    name: localStorage.getItem('username'),
-    email: localStorage.getItem('useremail'),
-    nickname: localStorage.getItem('username'),
-    gender: 'male',
-    birthday: '2000-01-01',
-    school: 'Tongji University',
-    github: 'https://github.com/SmithTime'
-  });
+const dialogVisible = ref(false) // 控制弹窗是否显示
 
-  // 定义用户格言
-  const userMotto = ref('Believe you can and you\'re halfway there.');
+// 定义当前主题
+const currentTheme = ref({
+  background: '#1A1A2E',
+  color: '#FFFFFF',
+  primaryColor: '#0F3460'
+});
 
-  // 更新用户格言
-  const updateUserMotto = (newMotto: string) => {
-      userMotto.value = newMotto;
-    };
+// 定义用户信息
+const user = ref({
+  name: localStorage.getItem('username'),
+  email: localStorage.getItem('useremail'),
+  nickname: localStorage.getItem('username'),
+  gender: 'male',
+  birthday: '2000-01-01',
+  school: '同济大学',
+  github: 'https://github.com/SmithTime'
+});
 
-  // 定义当前激活的展示内容
-  const activeSection = ref('profile');
+// 定义用户格言
+const userMotto = ref('行百里者半九十。');
 
-  const isEditing = ref(false); // 控制编辑模式
-
-  // 切换编辑模式
-  const toggleEdit = () => {
-    isEditing.value = !isEditing.value;
+// 更新用户格言
+const updateUserMotto = (newMotto: string) => {
+    userMotto.value = newMotto;
   };
 
-  // 保存更改
-  const saveChanges = async () => {
-    try {
-      isEditing.value = false;
-      
-      const response = await axios.post(
-        'http://localhost:8048/account/editinfo',
-        {
-          // 请求体的内容
-          username: user.value.nickname,
-          email: localStorage.getItem('useremail')
-        },
-        {
-          // 请求头部分
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json', // 确保内容类型是 JSON
-          }
-        }
-      );
+// 定义当前激活的展示内容
+const activeSection = ref('profile');
 
-      if (response.status === 200) {
-        const token = response.data;
+const isEditing = ref(false); // 控制编辑模式
 
-        localStorage.setItem('username', user.value.nickname ?? 'No nickname'); 
-        ElMessage({
-          message: 'your change is reserved.',
-          type: 'success',
-          duration: 3000, 
-        })
+// 切换编辑模式
+const toggleEdit = () => {
+  isEditing.value = !isEditing.value;
+};
 
-      } else {
-        console.error('Edit failed:', response.data);
-        ElMessage({
-          message: 'Edit failed!',
-          type: 'error',
-          duration: 3000, 
-        })
-      }
-    } catch (error:any) {
-      if (error.response) {
-        // 这是 Axios 处理的响应错误
-        console.log('Response error:', error.response);
-        ElMessage({
-          message: error.response.data|| 'An error occurred during edit.',
-          type: 'error',
-          duration: 3000, 
-        })
-      } else if (error.request) {
-        // 请求已发送，但没有收到响应
-        console.log('Request error:', error.request);
-        ElMessage({
-          message: 'No response from server.',
-          type: 'error',
-          duration: 3000, 
-        })
-      } else {
-        // 其他错误
-        console.log('Other error:', error.message);
-        ElMessage({
-          message: 'An unknown error occurred.',
-          type: 'error',
-          duration: 3000, 
-        })
-      }
-    }
-  };
-
-  // 设置当前激活的展示内容
-  const setActiveSection = (section: string) => {
-    activeSection.value = section;
-  };
-
-  
-
-  // 退出登录
-  const logout = async () => {
-    try {
-      console.log('logout triggered ');
-      // 调用后端登出 API
-      const response = await axios.get('http://localhost:8048/account/logout',  {
+// 保存更改
+const saveChanges = async () => {
+  try {
+    isEditing.value = false;
+    
+    const response = await axios.post(
+      'http://localhost:8048/account/editinfo',
+      {
+        username: user.value.nickname,
+        email: localStorage.getItem('useremail')
+      },
+      {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
         }
+      }
+    );
+
+    if (response.status === 200) {
+      const token = response.data;
+
+      localStorage.setItem('username', user.value.nickname ?? '未设置昵称'); 
+      ElMessage({
+        message: '修改已保存',
+        type: 'success',
+        duration: 3000, 
+      })
+
+    } else {
+      console.error('修改失败:', response.data);
+      ElMessage({
+        message: '修改失败！',
+        type: 'error',
+        duration: 3000, 
+      })
+    }
+  } catch (error:any) {
+    if (error.response) {
+      console.log('响应错误:', error.response);
+      ElMessage({
+        message: error.response.data|| '修改过程中发生错误',
+        type: 'error',
+        duration: 3000, 
+      })
+    } else if (error.request) {
+      console.log('请求错误:', error.request);
+      ElMessage({
+        message: '服务器无响应',
+        type: 'error',
+        duration: 3000, 
+      })
+    } else {
+      console.log('其他错误:', error.message);
+      ElMessage({
+        message: '发生未知错误',
+        type: 'error',
+        duration: 3000, 
+      })
+    }
+  }
+};
+
+// 设置当前激活的展示内容
+const setActiveSection = (section: string) => {
+  activeSection.value = section;
+};
+
+// 退出登录
+const logout = async () => {
+  try {
+    console.log('触发退出登录');
+    const response = await axios.get('http://localhost:8048/account/logout',  {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    if (response.status === 200) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      localStorage.removeItem('useremail');
+      localStorage.removeItem('role');
+
+      ElMessage({
+        message: '退出登录成功！',
+        type: 'success',
+        duration: 3000
       });
 
-      if (response.status === 200) {
-        // 登出成功，清除本地存储的用户信息
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        localStorage.removeItem('useremail');
-        localStorage.removeItem('role');
-
-        ElMessage({
-          message: 'Logged out successfully!',
-          type: 'success',
-          duration: 3000
-        });
-
-        // 跳转到登录页
-        window.location.href = '/login';  
-      } else {
-        ElMessage({
-          message: 'Logout failed, please try again.',
-          type: 'error',
-          duration: 3000
-        });
-      }
-
-    } catch (error) {
-      console.error('Logout failed:', error);
+      window.location.href = '/login';  
+    } else {
       ElMessage({
-        message: 'An error occurred during logout.',
+        message: '退出登录失败，请重试',
         type: 'error',
         duration: 3000
       });
-    } finally {
-      // 关闭弹窗
-      dialogVisible.value = false;
     }
-  };
 
-  </script>
+  } catch (error) {
+    console.error('退出登录失败:', error);
+    ElMessage({
+      message: '退出登录过程中发生错误',
+      type: 'error',
+      duration: 3000
+    });
+  } finally {
+    dialogVisible.value = false;
+  }
+};
+
+</script>
   
   <style scoped>
   .wrapper-out {

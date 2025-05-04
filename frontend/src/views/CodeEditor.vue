@@ -14,9 +14,9 @@
       />
       <div class="code-section">
         <div class="title">
-          <p><strong>Title:</strong> {{ fileInfo.title }}</p>
-          <p><strong>Owner:</strong> {{ fileInfo.owner }}</p>
-          <p><strong>Create Time:</strong> {{ fileInfo.createdAt }}</p>
+          <p><strong>标题：</strong> {{ fileInfo.title }}</p>
+          <p><strong>所有者：</strong> {{ fileInfo.owner }}</p>
+          <p><strong>创建时间：</strong> {{ fileInfo.createdAt }}</p>
         </div>
         <!-- 语言选择器和主题选择器以及代码编辑器 -->
         <SharedbCodeMirror
@@ -77,8 +77,8 @@ const fetchFileInfo = async () => {
     };
     
   } catch (error) {
-    ElMessage.error('Error fetching file infomation');
-    console.error('Error fetching file infomation:', error)
+    ElMessage.error('获取文件信息失败');
+    console.error('获取文件信息失败:', error)
   }
 }
 
@@ -98,8 +98,8 @@ const fetchUsers = async () => {
     }));
     console.log(fetchedUsers.value)
   } catch (error) {
-    ElMessage.error('Error fetching collaborators');
-    console.error('Error fetching collaborators:', error)
+    ElMessage.error('获取协作者列表失败');
+    console.error('获取协作者列表失败:', error)
   }
 }
 

@@ -51,7 +51,7 @@
   const showYearSelector = ref(false); // 控制年份选择框的显示
   
   // 星期标题
-  const weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
   
   // 当前月年份显示
   const currentMonthYear = computed(() =>

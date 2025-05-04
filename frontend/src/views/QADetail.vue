@@ -1,84 +1,83 @@
 <template>
-    <StickyNavbar
-     />
+  <StickyNavbar />
  
-   <!-- 左侧操作栏 -->
-   <div class="action-bar">
-       <el-button 
-         circle 
-         class="action-button"
-         :class="{ 'is-liked': isLiked }"
-         @click="toggleLike"
-       >
-         <el-icon><Star /></el-icon>
-         <span class="action-count">{{ post.likeCount }}</span>
-       </el-button>
-       <el-button circle class="action-button">
-         <el-icon><Share /></el-icon>
-       </el-button>
-   </div>
-   
-   <div class="container">
-      <el-card class="blog-detail">
-        <!-- 中间文章内容 -->
-        <div class="content-container">
-        <div class="article-header">
-            <h1 class="article-title">{{ post.title }}</h1>
-            <div class="article-meta">
-            <span class="author">Author: {{ post.author }}</span>
-            <span class="date">{{ formatDate(post.publishTime) }}</span>
-            <span class="views"><el-icon><View /></el-icon> {{ post.viewCount }}</span>
-            </div>
-            <div class="article-tags">
-            <el-tag 
-                v-for="tag in post.tags" 
-                :key="tag" 
-                size="small"
-                class="article-tag"
-            >
-                {{ tag }}
-            </el-tag>
-            </div>
-        </div>
-        <div class="article-content" v-html="renderedContent"></div>
-        </div>
-    
-        <!-- 下侧信息栏 -->
-        <div class="author-card">
-        <div>
-            <img :src="authorInfo.avatar" class="author-avatar" />
-        </div>
-        <div>
-            <div class="author-info">
-            <div class="author-name">{{ authorInfo.username }}</div>
-            <div class="stat-item">
-                Posts: {{ authorInfo.postCount }}
-            </div>
-            </div>
-            <el-button type="text">more ></el-button>
-        </div>
-        </div>
-      </el-card>
+ <!-- 左侧操作栏 -->
+ <div class="action-bar">
+     <el-button 
+       circle 
+       class="action-button"
+       :class="{ 'is-liked': isLiked }"
+       @click="toggleLike"
+     >
+       <el-icon><Star /></el-icon>
+       <span class="action-count">{{ post.likeCount }}</span>
+     </el-button>
+     <el-button circle class="action-button">
+       <el-icon><Share /></el-icon>
+     </el-button>
+ </div>
+ 
+ <div class="container">
+    <el-card class="blog-detail">
+      <!-- 中间文章内容 -->
+      <div class="content-container">
+      <div class="article-header">
+          <h1 class="article-title">{{ post.title }}</h1>
+          <div class="article-meta">
+          <span class="author">作者：{{ post.author }}</span>
+          <span class="date">{{ formatDate(post.publishTime) }}</span>
+          <span class="views"><el-icon><View /></el-icon> {{ post.viewCount }}</span>
+          </div>
+          <div class="article-tags">
+          <el-tag 
+              v-for="tag in post.tags" 
+              :key="tag" 
+              size="small"
+              class="article-tag"
+          >
+              {{ tag }}
+          </el-tag>
+          </div>
+      </div>
+      <div class="article-content" v-html="renderedContent"></div>
+      </div>
+  
+      <!-- 下侧信息栏 -->
+      <div class="author-card">
+      <div>
+          <img :src="authorInfo.avatar" class="author-avatar" />
+      </div>
+      <div>
+          <div class="author-info">
+          <div class="author-name">{{ authorInfo.username }}</div>
+          <div class="stat-item">
+              文章：{{ authorInfo.postCount }}
+          </div>
+          </div>
+          <el-button type="text">更多 ></el-button>
+      </div>
+      </div>
+    </el-card>
 
-      <div style="color: gray;">total 1 answer...</div>
+    <div style="color: gray;">共1条回答...</div>
 
-      <el-card class="remark-detail">
-        <!-- 评论内容 -->
-        <div class="content-container">
-            <div class="remarker-info">
-                <img :src="remark.avatar" class="author-avatar" />
-                <div>
-                <span class="author-name">{{ remark.author }}</span>
-                <span class="date">{{ formatDate(remark.publishTime) }}</span>
-                </div>
-            </div>
-            <div class="article-content" v-html="renderedRemark"></div>
-        </div>
-      </el-card>
+    <el-card class="remark-detail">
+      <!-- 评论内容 -->
+      <div class="content-container">
+          <div class="remarker-info">
+              <img :src="remark.avatar" class="author-avatar" />
+              <div>
+              <span class="author-name">{{ remark.author }}</span>
+              <span class="date">{{ formatDate(remark.publishTime) }}</span>
+              </div>
+          </div>
+          <div class="article-content" v-html="renderedRemark"></div>
+      </div>
+    </el-card>
 
-      <el-button class="answer" type="plain">write my idea</el-button>
-    </div>
- </template>
+    <el-button class="answer" type="plain">写下我的想法</el-button>
+  </div>
+</template>
  
  <script setup lang="ts">
  import { ref, onMounted, computed } from 'vue';
@@ -93,17 +92,17 @@
  // 模拟文章数据
  const post = ref({
    id: 1,
-   title: 'How to balance academics and internships as a junior student',
+   title: '大三学生如何平衡学业与实习',
    content: `
-How to balance academics and internships as a junior student? Sharing your internship planning experience, including resume preparation, interview tips, time management, and more...
-![Composition API示意图](/study.png)
+    大三学生如何平衡学业与实习？分享你的实习规划经验，包括简历准备、面试技巧、时间管理等方面...
+    ![Composition API示意图](/study.png)
    `,
-   author: 'Smith',
+   author: '史密斯',
    publishTime: '2025-01-15T10:00:00Z',
    viewCount: 2341,
    likeCount: 180,
    commentCount: 1,
-   tags: ['Vue3', 'Composition API', '前端开发']
+   tags: ['Vue3', '组合式API', '前端开发']
  });
  
  // 作者信息

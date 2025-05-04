@@ -1,36 +1,36 @@
 <template>
-    <!-- 卡片结构 -->
-    <el-card class="motto-card" >
-      <!-- Head 区域 -->
-      <div class="head" ></div>
-  
-      <!-- Content 区域 -->
-      <div class="content">
-        <span class="motto-text" >{{ motto }}</span>
-        <img 
-        src="/edit_motto.svg" 
-        alt="Edit" 
-        class="edit-icon"
-        @click="openEditDialog"
-      />
-      </div>
-  
-      <!-- 编辑弹窗 -->
-      <el-dialog
-        title="Edit Motto"
-        v-model="isDialogVisible"
-        width="30%"
-      >
-        <el-input v-model="newMotto" placeholder="Tpye your favorite motto here:"></el-input>
-        <template #footer>
-          <div class="dialog-footer">
-            <el-button @click="isDialogVisible = false">cancel</el-button>
-            <el-button type="primary" @click="updateMotto">save</el-button>
-          </div>
-        </template>
-      </el-dialog>
-    </el-card>
-  </template>
+  <!-- 卡片结构 -->
+  <el-card class="motto-card" >
+    <!-- Head 区域 -->
+    <div class="head" ></div>
+
+    <!-- Content 区域 -->
+    <div class="content">
+      <span class="motto-text" >{{ motto }}</span>
+      <img 
+      src="/edit_motto.svg" 
+      alt="Edit"
+      class="edit-icon"
+      @click="openEditDialog"
+    />
+    </div>
+
+    <!-- 编辑弹窗 -->
+    <el-dialog
+      title="编辑格言"
+      v-model="isDialogVisible"
+      width="30%"
+    >
+      <el-input v-model="newMotto" placeholder="在此输入您喜欢的格言："></el-input>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="isDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="updateMotto">保存</el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </el-card>
+</template>
   
   <script lang="ts" setup>
   import { defineProps, defineEmits, ref } from 'vue';

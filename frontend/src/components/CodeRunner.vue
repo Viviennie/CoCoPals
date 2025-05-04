@@ -1,22 +1,22 @@
 <template>
   <div class="container">
     <div class="btn">
-      <el-button @click="runCode" type="primary">Run</el-button>
+      <el-button @click="runCode" type="primary">运行</el-button>
     </div>
     <el-tabs class="demo-tabs" :style="{ width: props.width, height: props.height}">
       <!-- 参数输入 -->
-      <el-tab-pane label="input">
+      <el-tab-pane label="输入">
         <el-input
           id="parameters"
           type="textarea"
           v-model="parameters"
-          placeholder="parameters..."
+          placeholder="输入参数..."
           style="margin-top: 10px; width: 100%; height: 100%;"
         />
       </el-tab-pane>
 
       <!-- 显示结果 -->
-      <el-tab-pane label="output">
+      <el-tab-pane label="输出">
         <div class="result-container">
           <pre style="color: 616161;">{{ result }}</pre>
         </div>
@@ -55,11 +55,6 @@ onMounted(async () => {
   document.body.appendChild(pyodideScript);
 });
 
-// 前端运行方式：
-// 可以在input框里用空格分割参数输入，然后在代码里用arg[0]这种去依次访问。
-// 不能用input()会导致浏览器弹窗，当然可以在prompt里输入，就不用在代码写arg
-// sys方式我用不了，读取不到（但是后端是sys）
-
 // 运行代码
 const runCode = async () => {
   try {
@@ -72,13 +67,13 @@ const runCode = async () => {
           input: parameters.value
         }
       });
-      console.log("Success", response);
+      console.log("成功", response);
       result.value = response.data;
     } else {
-      result.value = `The language ${props.selectedLanguage} is not supported by now`;
+      result.value = `当前暂不支持 ${props.selectedLanguage} 语言`;
     }
   } catch (err) {
-    result.value = `There was an error running: ${err}`;
+    result.value = `运行出错: ${err}`;
   }
 };
 </script>

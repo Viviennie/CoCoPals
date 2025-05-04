@@ -4,27 +4,27 @@
       <div class="circle circle-one"></div>
       <div class="form-container">
         <div style="display: flex;justify-content: space-between;">
-          <h1 class="opacity">LOGIN</h1>
+          <h1 class="opacity">登录</h1>
           <ModelViewer />
         </div>
         <form @submit.prevent="handleLogin">
           <input
             type="text"
             v-model="identity"
-            placeholder="USERNAME OR EMAIL"
+            placeholder="用户名或邮箱"
             class="form-input"
           />
           <input
             type="password"
             v-model="password"
-            placeholder="PASSWORD"
+            placeholder="密码"
             class="form-input"
           />
-          <button class="form-button opacity">SUBMIT</button>
+          <button class="form-button opacity">提交</button>
         </form>
         <div class="register-forget opacity">
-          <router-link to="/register" @click.prevent="$emit('register')">REGISTER</router-link>
-          <a href="#" @click.prevent="$emit('forgot-password')">FORGOT PASSWORD</a>
+          <router-link to="/register" @click.prevent="$emit('register')">注册账号</router-link>
+          <a href="#" @click.prevent="$emit('forgot-password')">忘记密码</a>
         </div>
       </div>
       <div class="circle circle-two"></div>
@@ -34,7 +34,7 @@
         type="primary"
         link
       >
-        Continue as Guest
+        游客继续访问
       </el-button>
     </router-link>
   </section>
@@ -73,7 +73,7 @@ const handleLogin = async () => {
       const role = response.data.role;
       localStorage.setItem('role', role); 
       ElMessage({
-        message: 'Login Successful!',
+        message: '登录成功！',
         type: 'success',
         duration: 3000, 
       })
@@ -88,14 +88,14 @@ const handleLogin = async () => {
       let useremail = response2.data.email; 
       localStorage.setItem('username', username); 
       localStorage.setItem('useremail', useremail); 
-      console.log('GetInfo successful:', response2.data);
+      console.log('用户信息获取成功:', response2.data);
 
       // 跳转到首页
       router.push('/');
     } else {
-      console.error('Login failed:', response.data);
+      console.error('登录失败:', response.data);
       ElMessage({
-        message: 'Login failed!',
+        message: '登录失败！',
         type: 'error',
         duration: 3000, 
       })
@@ -103,25 +103,25 @@ const handleLogin = async () => {
   } catch (error:any) {
     if (error.response) {
       // 这是 Axios 处理的响应错误
-      console.log('Response error:', error.response);
+      console.log('响应错误:', error.response);
       ElMessage({
-        message: error.response.data|| 'An error occurred during login.',
+        message: error.response.data|| '登录过程中发生错误',
         type: 'error',
         duration: 3000, 
       })
     } else if (error.request) {
       // 请求已发送，但没有收到响应
-      console.log('Request error:', error.request);
+      console.log('请求错误:', error.request);
       ElMessage({
-        message: 'No response from server.',
+        message: '服务器无响应',
         type: 'error',
         duration: 3000, 
       })
     } else {
       // 其他错误
-      console.log('Other error:', error.message);
+      console.log('其他错误:', error.message);
       ElMessage({
-        message: 'An unknown error occurred.',
+        message: '发生未知错误',
         type: 'error',
         duration: 3000, 
       })

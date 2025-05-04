@@ -5,7 +5,7 @@
         <!-- 语言选择器 -->
         <div>
           <label for="language"><el-icon :style="iconStyle"><Place /></el-icon></label>
-          <el-select v-model="localSelectedLanguage" placeholder="language" size="small" style="width: 100px" @change="updateCM">
+          <el-select v-model="localSelectedLanguage" placeholder="选择语言" size="small" style="width: 100px" @change="updateCM">
             <el-option
               v-for="item in languageOptions"
               :key="item.value"
@@ -18,7 +18,7 @@
         <!-- 主题选择器 -->
         <div>
           <label for="theme"><el-icon :style="iconStyle" ><Picture /></el-icon></label>
-          <el-select v-model="selectedTheme" placeholder="theme" size="small" style="width: 100px" @change="updateCM">
+          <el-select v-model="selectedTheme" placeholder="选择主题" size="small" style="width: 100px" @change="updateCM">
             <el-option
               v-for="item in themeOptions"
               :key="item.value"
@@ -38,7 +38,7 @@
       <codemirror
         :key="editorKey"
         v-model="localCode"
-        placeholder="Code goes here..."
+        placeholder="在此输入代码..."
         :style="{ width: props.width, height: props.height }"
         :autofocus="true"
         :indent-with-tab="true"
@@ -56,8 +56,7 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import { python } from "@codemirror/lang-python";
 import { EditorView } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
-// import ReconnectingWebSocket from 'reconnecting-websocket';
-// import { Connection } from 'sharedb/lib/client';
+
 // Props 接收从父组件传递过来的数据
 const props = defineProps<{ 
   code: string;
@@ -86,8 +85,8 @@ const languageOptions = [
 ];
 
 const themeOptions = [
-  { value: 'oneDark', label: 'One Dark' },
-  { value: 'customLight', label: 'Custom Light' },
+  { value: 'oneDark', label: '深色主题' },
+  { value: 'customLight', label: '浅色主题' },
 ];
 
 // 根据主题选择动态改变背景色
@@ -139,7 +138,6 @@ const themeExtensions: Record<string, any> = {
   }),
 };
 
-
 // 更新 CodeMirror 的扩展
 const updateCM = () => {
   extensions = [
@@ -184,5 +182,4 @@ onMounted(() => {
   display: flex;
   gap: 1rem;
 }
-
 </style>

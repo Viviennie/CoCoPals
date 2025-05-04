@@ -3,55 +3,55 @@
 
   <!-- 顶部横幅 -->
   <section class="banner">
-    <img src="/home.png" alt="Banner Image" class="banner-image" />
+    <img src="/home.png" alt="CoCoPals编程乐园" class="banner-image" />
     <div class="banner-text">
       <div>
-      <h1 style="font-size: 45px;color:darkblue;">Make Coding a Shared Wonderful Journey</h1>
-      <p style="font-size: 30px;color:darkblue;">Collaborative Programming for Better Teaching and Collaborative Experiences</p>
+      <h1 style="font-size: 45px;color:darkblue;">开启编程奇妙之旅</h1>
+      <p style="font-size: 30px;color:darkblue;">协作编程，让学习更有趣</p>
     </div>
-      <router-link to="/about" class="learn-more-btn">Learn More  →</router-link> 
+      <router-link to="/about" class="learn-more-btn">了解更多 →</router-link> 
     </div>
   </section>
 
   <div class="features-intro">
     <div class="bar"></div>
     <div>
-      <p>A Shortcut of Recommended Features</p>
-      <p>for Users to Try</p>
+      <p>推荐功能快速体验</p>
+      <p>点击立即尝试</p>
     </div>
   </div>
 
   <div class="buttons">
     <FeatureButton
       :icon="DataBoard"
-      text="Interactive Teaching"
+      text="互动课堂"
       route="/editlist"
     />
     <FeatureButton
       :icon="Connection"
-      text="Online Judge"
+      text="编程挑战"
       route="/problemlist"
     />
     <FeatureButton
       :icon="Opportunity"
-      text="Blog Share"
+      text="学习笔记"
       route="/blog"
     />
     <FeatureButton
       :icon="Collection"
-      text="Class Activity"
+      text="班级活动"
       route="/profile"
     />
   </div>
   <div class="buttons">
     <FeatureButton
       :icon="Flag"
-      text="Team Competitions"
+      text="团队竞赛"
       route="/problemlist"
     /> 
     <FeatureButton
       :icon="Reading"
-      text="Peer Code Review"
+      text="代码互评"
       route="/"
     />
   </div>
@@ -64,7 +64,7 @@
           <div class="icon-circle">
             <el-icon><Location /></el-icon>
           </div>
-          <p>4800 Cao'an Street<br />Jiading, Shanghai</p>
+          <p>上海市嘉定区<br />曹安公路4800号</p>
         </div>
         <div class="contact-item">
           <div class="icon-circle">
@@ -80,8 +80,8 @@
         </div>
       </div>
       <div class="project-info">
-        <h3>About the Project</h3>
-        <p>Embracing the New Era of Education,we are redefining the ecosystem of programming education,breathing vibrant life into diverse teaching and learning experiences.</p>
+        <h3>关于CoCoPals</h3>
+        <p>我们致力于打造全新的编程教育生态，为师生带来生动有趣的教学体验，让编程学习变得更加轻松愉快。</p>
       </div>
     </div>
   </footer>
@@ -98,6 +98,7 @@ import { Location, Phone, Message, Flag, Reading, Connection, Collection, DataBo
 <style scoped>
 
 /* 顶部横幅样式 */
+/* 顶部横幅样式 */
 .banner {
   position: relative;
   text-align: center;
@@ -106,18 +107,27 @@ import { Location, Phone, Message, Flag, Reading, Connection, Collection, DataBo
 .banner-image {
   width: 100%;
   height: auto;
+  display: block; /* 确保图片没有底部间隙 */
 }
 
 .banner-text {
-  color: #fff;
   position: absolute;
   top: 50%;
-  left: 41%;
-  transform: translate(-33%, -50%);
-  display: flex;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%; /* 添加宽度限制 */
+  max-width: 1200px; /* 根据实际需要调整 */
+  padding: 0 20px; /* 添加内边距 */
+  box-sizing: border-box;
+  text-align: center; /* 文字居中 */
+}
+
+.banner-text > div {
+  /*display: flex;*/
   flex-direction: column;
-  gap: 50px;
-  align-items: center;
+  align-items: center; /* 子元素居中 */
+  /*gap: 20px;  调整标题和副标题间距 */
+  margin-bottom: 100px; /* 增加这个属性 */
 }
 
 .learn-more-btn {
@@ -157,9 +167,14 @@ import { Location, Phone, Message, Flag, Reading, Connection, Collection, DataBo
   display: flex;
   justify-content: start;
   align-items: center;
-  margin: 10px 250px;
-  gap:20px;
+  margin: 30px 250px 10px; /* 修改为：上50px 左右250px 下10px */
+  gap: 20px;
   font-size: large;
+}
+
+.features-intro div p {
+  margin-top: 5px;
+  margin-bottom: 5px; /* 移除默认的外边距 */
 }
 
 /* 底部样式 */

@@ -1,105 +1,105 @@
 <template>
-    <el-card class="user-card" >
-      <!-- 头像、名字、邮箱 -->
-      <div class="user-brief-info">
-        <div class="avatar">
-          <img src="/avatar.png" alt="Avatar" />
-        </div>
-        <div class="info-item">
-          <span class="name" >{{ name }}</span>
-        </div>
-        <div class="info-item email-container">
-          <span class="email" >Email:{{ email }}</span>
-          <el-icon
-            :style="{ cursor: 'pointer', marginLeft: '5px' }"
-            @click="openEditDialog"
-          >
-          <Edit />
-          </el-icon>
-        </div>
-        <div class="info-item email-container">
-          <span class="email" >Role:{{ role }}</span>
-          <el-icon
-            :style="{ cursor: 'pointer', marginLeft: '5px', }"
-            @click="openCertificateDialog"
-          >
-          <Postcard />
-          </el-icon>
-        </div>
+  <el-card class="user-card" >
+    <!-- 头像、名字、邮箱 -->
+    <div class="user-brief-info">
+      <div class="avatar">
+        <img src="/avatar.png" alt="头像" />
       </div>
-  
-      <!-- 我的个人资料 -->
-      <div class="profile-section">
-        <el-button
-          type="text"
-          :class="{ active: activeSection === 'profile', 'el-button-custom': true }"
-          @click="setActiveSection('profile')"
+      <div class="info-item">
+        <span class="name" >{{ name }}</span>
+      </div>
+      <div class="info-item email-container">
+        <span class="email" >邮箱:{{ email }}</span>
+        <el-icon
+          :style="{ cursor: 'pointer', marginLeft: '5px' }"
+          @click="openEditDialog"
         >
-          <el-icon><User /></el-icon>
-          My Profile
-        </el-button>
+        <Edit />
+        </el-icon>
       </div>
-  
-      <!-- 最近活动 -->
-      <div class="activity-section">
-        <el-button
-          type="text"
-          :class="{ active: activeSection === 'activity', 'el-button-custom': true }"
-          @click="setActiveSection('activity')"
+      <div class="info-item email-container">
+        <span class="email" >角色:{{ role === 'TEACHER' ? '教师' : '学生' }}</span>
+        <el-icon
+          :style="{ cursor: 'pointer', marginLeft: '5px', }"
+          @click="openCertificateDialog"
         >
-          <el-icon><Clock /></el-icon>
-          Recent Activity
-        </el-button>
+        <Postcard />
+        </el-icon>
       </div>
-      
-      <!-- 我的班级 -->
-      <div class="class-section">
-        <el-button
-          type="text"
-          :class="{ active: activeSection === 'class', 'el-button-custom': true }"
-          @click="setActiveSection('class')"
-        >
-        <el-icon><ChatLineSquare /></el-icon>
-          My Class
-        </el-button>
-      </div>
+    </div>
 
-       <!-- 编辑邮箱弹窗 -->
-       <el-dialog title="Change email" v-model="isDialogVisible">
-        <el-input v-model="email" placeholder="Please input new email address"></el-input>
-        <!-- 底部按钮区域 -->
-        <template #footer>
-        <div class="dialog-footer">
-            <el-button @click="isDialogVisible = false">cancel</el-button>
-            <el-button type="primary" @click="updateEmail">save</el-button>
-        </div>
-        </template>
-        </el-dialog>
+    <!-- 我的个人资料 -->
+    <div class="profile-section">
+      <el-button
+        type="text"
+        :class="{ active: activeSection === 'profile', 'el-button-custom': true }"
+        @click="setActiveSection('profile')"
+      >
+        <el-icon><User /></el-icon>
+        我的资料
+      </el-button>
+    </div>
 
-        <!-- 教师认证弹窗 -->
-        <el-dialog title="Teacher Qualify" v-model="isDialogVisible2" >
-          <p style="font-size: 16px;">Please upload your TQC and employment certificate.</p>
-          <el-upload
-            ref="upload"
-            class="upload-demo"
-            :limit="2"
-            :on-exceed="handleExceed"
-            :auto-upload="false"
-            :on-change="handleFileChange"
-          >
-            <template #trigger>
-              <el-button type="primary">select file</el-button>
-            </template>
-          </el-upload>
-          <template #footer>
-            <div class="dialog-footer">
-                <el-button @click="isDialogVisible2 = false">cancel</el-button>
-                <el-button type="primary" @click="submitUpload">upload </el-button>
-            </div>
+    <!-- 最近活动 -->
+    <div class="activity-section">
+      <el-button
+        type="text"
+        :class="{ active: activeSection === 'activity', 'el-button-custom': true }"
+        @click="setActiveSection('activity')"
+      >
+        <el-icon><Clock /></el-icon>
+        最近活动
+      </el-button>
+    </div>
+    
+    <!-- 我的班级 -->
+    <div class="class-section">
+      <el-button
+        type="text"
+        :class="{ active: activeSection === 'class', 'el-button-custom': true }"
+        @click="setActiveSection('class')"
+      >
+      <el-icon><ChatLineSquare /></el-icon>
+        我的班级
+      </el-button>
+    </div>
+
+     <!-- 编辑邮箱弹窗 -->
+     <el-dialog title="修改邮箱" v-model="isDialogVisible">
+      <el-input v-model="email" placeholder="请输入新的邮箱地址"></el-input>
+      <!-- 底部按钮区域 -->
+      <template #footer>
+      <div class="dialog-footer">
+          <el-button @click="isDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="updateEmail">保存</el-button>
+      </div>
+      </template>
+      </el-dialog>
+
+      <!-- 教师认证弹窗 -->
+      <el-dialog title="教师认证" v-model="isDialogVisible2" >
+        <p style="font-size: 16px;">请上传您的教师资格证和在职证明</p>
+        <el-upload
+          ref="upload"
+          class="upload-demo"
+          :limit="2"
+          :on-exceed="handleExceed"
+          :auto-upload="false"
+          :on-change="handleFileChange"
+        >
+          <template #trigger>
+            <el-button type="primary">选择文件</el-button>
           </template>
-        </el-dialog>
-    </el-card>
-  </template>
+        </el-upload>
+        <template #footer>
+          <div class="dialog-footer">
+              <el-button @click="isDialogVisible2 = false">取消</el-button>
+              <el-button type="primary" @click="submitUpload">上传</el-button>
+          </div>
+        </template>
+      </el-dialog>
+  </el-card>
+</template>
   
   <script lang="ts" setup>
   import { defineProps, defineEmits,ref } from 'vue';
