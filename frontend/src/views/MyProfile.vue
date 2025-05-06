@@ -306,7 +306,7 @@ const logout = async () => {
   width: 650px;
   padding: 30px;
   background-color: #ffffff;
-  border-radius: 10px;
+  border-radius: 30px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -328,9 +328,9 @@ const logout = async () => {
   position: absolute;
   bottom: 2px;
   right: calc(50% - 60px);
-  width: 30px;
-  height: 30px;
-  background:linear-gradient(45deg, #9BBCC3, #CBA5D1);
+  width: 20px;
+  height: 20px;
+  background:#afdfff;
   border-radius: 50%;
   padding: 5px;
   cursor: pointer;

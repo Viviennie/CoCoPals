@@ -3,7 +3,7 @@
     <div class="navbar-content">
       <!-- Logo区域 -->
       <div class="logo-container" @click="gotoGuide()">
-        <img src="/unicorn.png" alt="logo" class="logo" />
+        <img src="/logo.png" alt="logo" class="logo" />
         <!-- <img src="/name.png" alt="name" class="name" /> -->
         <p :style="{ fontWeight: 800, margin: '10px', fontSize: '20px' }" >CoCoPals</p>
       </div>
@@ -22,7 +22,7 @@
             class="nav-link"
             :class="{ active: activeIndex === index }"
             @click="setActiveIndex(index)"
-            :style="{ color: activeIndex === index ? '#9BBCC3' : 'black' }"
+            :style="{ color: activeIndex === index ? '#4eaae9' : 'black' }"
           >
             {{ link.label }}
           </router-link>
@@ -54,14 +54,14 @@
     { label: '自由编程', path: '/editlist' },
     { label: 'OJ在线评测', path: '/problemlist' },
     { label: '班级', path: '/class' },
-    {
-      label: '关于我们',
-      path: '/about',
-      subMenu: [
-        { label: '项目详情', path: '/about' },
-        { label: '相关算法', path: '/aboutalgorithm' }
-      ]
-    },
+    //{
+      //label: '关于我们',
+      //path: '/about',
+      //subMenu: [
+        //{ label: '项目详情', path: '/about' },
+        //{ label: '相关算法', path: '/aboutalgorithm' }
+      //]
+    //},
     { label: '我的', path: '/profile' },
   ];
   

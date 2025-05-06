@@ -57,7 +57,7 @@
     width: 200px;
     height: 130px;
     background-color: #ffffff;
-    border-radius: 10px;
+    border-radius: 20px;
     box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.15);
     transition: transform 0.2s ease,background-color 0.2s ease;
     cursor: pointer;
@@ -69,7 +69,7 @@
   }
   
   .icon {
-    background: linear-gradient(45deg, #9BBCC3, #CBA5D1);
+    background: #4eaae9;
     /* background-color: #333; */
     color: #ffffff;
     width: 40px;

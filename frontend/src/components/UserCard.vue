@@ -258,9 +258,9 @@
     width: 305px;
     height: 400px;
     margin: 5px auto;
-    border-radius: 5px;
+    border-radius: 30px;
     border-width: 0;
-    background:linear-gradient(45deg, #9BBCC3, #CBA5D1);
+    background:#afdfff;
   }
   
   .user-brief-info {
@@ -273,7 +273,7 @@
   .avatar img {
     width: 100px;
     height: 100px;
-    border-radius: 10%;
+    border-radius: 50%;
   }
   
   .info-item {
@@ -329,7 +329,7 @@
     top: 0;
     bottom: 0;
     width: 4px;
-    background:linear-gradient(45deg, #9BBCC3, #CBA5D1);
+    background:#80c654;
     border-radius: 2px 0 0 2px;
   }
   

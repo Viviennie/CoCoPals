@@ -103,7 +103,7 @@
   <style scoped>
   
   .banner-image {
-    width: auto; 
+    width: 80%; 
     height: 100%; 
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
@@ -152,7 +152,7 @@
   }
   
   li.active a {
-    color: #CBA5D1;
+    color: #4eaae9;
     font-weight: 700;
   }
   

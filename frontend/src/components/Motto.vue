@@ -64,12 +64,12 @@
     display:flexbox;
     width: 700px;
     height: 90px; 
-    border-radius: 5px;
+    border-radius: 10px;
     overflow: hidden;
     border: none;
     padding: 0;
     margin: 5px auto;
-    background:linear-gradient(45deg, #9BBCC3, #CBA5D1);
+    background:#80c654;
     
   }
   .head {

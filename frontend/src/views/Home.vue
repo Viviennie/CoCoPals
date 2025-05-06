@@ -131,16 +131,15 @@ import { Location, Phone, Message, Flag, Reading, Connection, Collection, DataBo
 }
 
 .learn-more-btn {
-  border-radius: 5px; 
+  border-radius: 15px; 
   font-size: large;
   padding: 18px 45px;
   text-decoration: none; /* 去掉下划线 */
   border: none;
   cursor: pointer;
   color: white;
-  background:linear-gradient(45deg, #9BBCC3, #CBA5D1);
+  background:linear-gradient(45deg, #80c654, #4eaae9);
   box-shadow: 0 6px 10px #2a2a2a;
-
   transition: transform 0.3s ease;
 }
 
@@ -150,7 +149,7 @@ import { Location, Phone, Message, Flag, Reading, Connection, Collection, DataBo
 }
 
 .bar {
-  background: linear-gradient(45deg, #9BBCC3, #CBA5D1);
+  background: linear-gradient(45deg, #4eaae9);
   width: 5px;
   height: 60px;
 }
@@ -161,13 +160,14 @@ import { Location, Phone, Message, Flag, Reading, Connection, Collection, DataBo
   margin-left: 250px;
   margin-top: 50px;
   margin-bottom: 50px;
+  border-radius: 20px;
 }
 
 .features-intro {
   display: flex;
   justify-content: start;
   align-items: center;
-  margin: 30px 250px 10px; /* 修改为：上50px 左右250px 下10px */
+  margin: 30px 250px 10px;
   gap: 20px;
   font-size: large;
 }
