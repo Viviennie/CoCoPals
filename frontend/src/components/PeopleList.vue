@@ -12,7 +12,7 @@
 
       <ul class="user-item">
         <!-- 当前用户 -->
-        <li>
+        <li v-if="currentUser">
           <img src="https://img.icons8.com/bubbles/50/000000/user.png" alt="avatar" class="avatar" />
           <span class="user-name">{{ currentUser.name }} (我)</span>
 
@@ -39,7 +39,7 @@
           <div class="tooltip-container">
             <button
                 class="icon-btn"
-                :disabled="currentUser.role!=='TEACHER'"
+                :disabled="userRole!=='TEACHER'"
             >
               <img
                   :src="currentUser.canCollaborate ?
@@ -49,7 +49,7 @@
                   class="action-icon disabled-icon"
               />
               <span class="tooltip-text">
-                {{ currentUser.role === 'TEACHER' ? "当前可协作" :
+                {{ userRole === 'TEACHER' ? "当前可协作" :
                   (currentUser.canCollaborate ? "无权限操作(当前可协作)" : "无权限操作(当前不可协作)") }}
               </span>
             </button>
@@ -57,7 +57,7 @@
         </li>
 
         <!-- 分割线 -->
-        <div class="divider"></div>
+        <div class="divider" v-if="currentUser && otherUsers.length > 0"></div>
 
         <!-- 其他用户列表 -->
         <li
@@ -71,8 +71,8 @@
           <div class="tooltip-container">
             <button
                 class="icon-btn"
-                @click.stop="currentUser.role === 'TEACHER' ? toggleUserMic(user.id) : null"
-                :disabled="currentUser.role !== 'TEACHER'"
+                @click.stop="userRole === 'TEACHER' ? toggleUserMic(user.id) : null"
+                :disabled="userRole !== 'TEACHER'"
             >
               <img
                   :src="user.micEnabled ?
@@ -83,7 +83,7 @@
               />
             </button>
             <span class="tooltip-text">
-              {{ currentUser.role === 'TEACHER' ? (user.micEnabled ? '关闭麦克风' : '打开麦克风') : "无权限操作"}}
+              {{ userRole === 'TEACHER' ? (user.micEnabled ? '关闭麦克风' : '打开麦克风') : "无权限操作"}}
             </span>
           </div>
 
@@ -91,8 +91,8 @@
           <div class="tooltip-container">
             <button
                 class="icon-btn"
-                @click.stop="currentUser.role === 'TEACHER' ? toggleUserCollaboration(user.id) : null"
-                :disabled="currentUser.role !== 'TEACHER'"
+                @click.stop="userRole === 'TEACHER' ? toggleUserCollaboration(user.id) : null"
+                :disabled="userRole !== 'TEACHER'"
             >
               <img
                   :src="user.canCollaborate ?
@@ -100,10 +100,10 @@
                   'https://img.icons8.com/ios/50/FFFFFF/collaboration.png'"
                   alt="collaboration control"
                   class="action-icon"
-                  :class="{ 'disabled-icon': currentUser.role !== 'TEACHER' }"
+                  :class="{ 'disabled-icon': userRole !== 'TEACHER' }"
               />
               <span class="tooltip-text">
-                {{ currentUser.role === 'TEACHER' ? (user.canCollaborate ? '取消授权协作' : '授权协作') : "无权限操作"}}
+                {{ userRole === 'TEACHER' ? (user.canCollaborate ? '取消授权协作' : '授权协作') : "无权限操作"}}
               </span>
             </button>
           </div>
@@ -121,7 +121,6 @@
 
 <script lang="ts" setup>
 import {ref, computed, onMounted} from 'vue';
-import {current} from "immer";
 
 const isOpen = ref(false);
 
@@ -136,17 +135,17 @@ const props = defineProps<{
   users: Users[]
 }>();
 
-const currentUser = ref({
-  id: Number(localStorage.getItem("id")),
-  name:localStorage.getItem("username"),
-  role:localStorage.getItem("role"),
-  micEnabled: false,
-  canCollaborate: false,
-})
+const userRole = ref(localStorage.getItem("role") || '');
+const userId = Number(localStorage.getItem("id"));
+
+// 计算属性：获取当前用户
+const currentUser = computed(() => {
+  return props.users.find(user => user.id === userId);
+});
 
 // 计算属性：获取其他用户（排除当前用户）
 const otherUsers = computed(() => {
-  return props.users.filter(user => user.id !== currentUser.value.id);
+  return props.users.filter(user => user.id !== userId);
 });
 
 // 切换侧边栏的打开/关闭状态
@@ -156,13 +155,9 @@ const toggleSidebar = () => {
 
 // 切换用户麦克风状态
 const toggleUserMic = (userId: number) => {
-  if (userId === currentUser.value.id) {
-    currentUser.value.micEnabled = !currentUser.value.micEnabled;
-  } else {
-    const user = props.users.find(u => u.id === userId);
-    if (user) {
-      user.micEnabled = !user.micEnabled;
-    }
+  const user = props.users.find(u => u.id === userId);
+  if (user) {
+    user.micEnabled = !user.micEnabled;
   }
 };
 
@@ -174,9 +169,11 @@ const toggleUserCollaboration = (userId: number) => {
   }
 };
 
-onMounted(()=>{
-  currentUser.value.canCollaborate = currentUser.role === "TEACHER";
-})
+onMounted(() => {
+  if (currentUser.value && userRole.value === "TEACHER") {
+    currentUser.value.canCollaborate = true;
+  }
+});
 </script>
 
 <style scoped>
