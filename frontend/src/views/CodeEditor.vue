@@ -103,53 +103,28 @@ const fetchFileInfo = async () => {
 // 获取用户角色
 const userRole = ref(localStorage.getItem("role") || '');
 
-const fetchedUsers = ref([
-    {
-      id: 1,
-      name: localStorage.getItem("username"),
-      micEnabled: true,
-      canCollaborate: true
-    },
-    {
-      id: 2,
-      name: "李四",
-      micEnabled: false,
-      canCollaborate: false,
-    },
-    {
-      id: 3,
-      name: "王五",
-      micEnabled: false,
-      canCollaborate: false,
-    },
-    {
-      id: 4,
-      name: "赵六",
-      micEnabled: false,
-      canCollaborate: false,
-    }
-  ]);
+const fetchedUsers = ref([]);
 
-// const fetchUsers = async () => {
-//   try {
-//     const response = await axios.get(`http://localhost:8048/document/getUsersByDocumentId?documentId=${documentId.value}`,{
-//       headers: {
-//         Authorization: `Bearer ${localStorage.getItem('token')}`,
-//       },
-//     });
-//     console.log(response.data);
-//     fetchedUsers.value = response.data.map((user:any) => ({
-//       id: user.id,
-//       name: user.username,
-//       canCollaborate: false,
-//       micEnabled:false,
-//     }));
-//     console.log(fetchedUsers.value)
-//   } catch (error) {
-//     ElMessage.error('获取协作者列表失败');
-//     console.error('获取协作者列表失败:', error)
-//   }
-// }
+const fetchUsers = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8048/document/getUsersByDocumentId?documentId=${documentId.value}`,{
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    console.log(response.data);
+    fetchedUsers.value = response.data.map((user:any) => ({
+      id: user.id,
+      name: user.username,
+      canCollaborate: false,
+      micEnabled:false,
+    }));
+    console.log(fetchedUsers.value)
+  } catch (error) {
+    ElMessage.error('获取协作者列表失败');
+    console.error('获取协作者列表失败:', error)
+  }
+}
 
 
 // 时间戳记录
@@ -175,7 +150,7 @@ onMounted(() => {
   console.log(route.query.documentId);
   documentId.value = Number(route.query.documentId);
   fetchFileInfo();
-  // fetchUsers();
+  fetchUsers();
 });
 </script>
 

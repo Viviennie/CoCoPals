@@ -120,7 +120,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import {current} from "immer";
 
 const isOpen = ref(false);
@@ -137,11 +137,11 @@ const props = defineProps<{
 }>();
 
 const currentUser = ref({
-  id: 1,
+  id: Number(localStorage.getItem("id")),
   name:localStorage.getItem("username"),
   role:localStorage.getItem("role"),
   micEnabled: false,
-  canCollaborate: true,
+  canCollaborate: false,
 })
 
 // 计算属性：获取其他用户（排除当前用户）
@@ -173,6 +173,10 @@ const toggleUserCollaboration = (userId: number) => {
     user.canCollaborate = !user.canCollaborate;
   }
 };
+
+onMounted(()=>{
+  currentUser.value.canCollaborate = currentUser.role === "TEACHER";
+})
 </script>
 
 <style scoped>
