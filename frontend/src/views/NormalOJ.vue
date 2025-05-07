@@ -43,6 +43,7 @@
         </div>
       </div>
     </div>
+    <AIAssistant :question ="currentProblem?.title" :code ="code" :describ ="currentProblem?.description"/>
   </section>
 </template>
 
@@ -54,6 +55,7 @@ import CodeRunner from '../components/CodeRunner.vue';
 import CodeReviewer from '../components/CodeReviewer.vue'; 
 import StickyNavbar from '../components/Navbar.vue';
 import Sidebar from '../components/Sidebar.vue';
+import AIAssistant from '../components/AIAssistant.vue'
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 

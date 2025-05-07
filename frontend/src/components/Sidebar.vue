@@ -1,3 +1,4 @@
+<!-- Sidebar.vue -->
 <template>
   <div>
     <!-- 覆盖层，用于半透明遮罩背景 -->
@@ -7,7 +8,7 @@
     <nav class="sidebar" :class="{ open: isOpen }">
       <!-- 菜单标题 -->
       <div class="sidebar-header">
-        <h2>题目列表</h2>  <!-- 翻译为中文 -->
+        <h2>题目列表</h2>
       </div>
 
       <!-- 题目列表 -->
@@ -27,6 +28,7 @@
       <span class="hamb-middle"></span>
       <span class="hamb-bottom"></span>
     </button>
+    
   </div>
 </template>
 
@@ -72,7 +74,7 @@ onMounted(async () => {
       problems.value = response.data;
     }
   } catch (error) {
-    console.error('题目加载失败:', error);  <!-- 翻译为中文 -->
+    console.error('加载题目失败:', error);
   }
 });
 </script>
@@ -217,4 +219,5 @@ top: 50%;
 transform: rotate(-45deg);
 background-color: #ffffff;
 }
+
 </style>
