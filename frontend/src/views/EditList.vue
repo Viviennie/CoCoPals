@@ -165,7 +165,7 @@ const handleAdd = async () => {
     })
 
     // 刷新文件列表
-    fetchFileList();
+    await fetchFileList();
   } catch (error:any) {
     console.error("Error:", error.response || error.message);
     ElMessage({
@@ -212,10 +212,10 @@ const handleInvitation = async () => {
       type: 'success',
       duration: 3000, 
     })
-    router.push({
-    path: '/basecode',
-    query: { documentId: response.data } 
-  })
+    await router.push({
+      path: '/basecode',
+      query: {documentId: response.data}
+    })
   } catch (error:any) {
     console.error("Error:", error.response || error.message);
     ElMessage({
@@ -303,7 +303,7 @@ const fetchFileList = async()=> {
 }
 
 onMounted(async () => {
-  fetchFileList();
+  await fetchFileList();
 });
 </script>
   

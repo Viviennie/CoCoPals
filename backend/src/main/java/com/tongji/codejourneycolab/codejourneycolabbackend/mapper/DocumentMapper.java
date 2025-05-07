@@ -11,13 +11,13 @@ import java.util.List;
 @Mapper
 public interface DocumentMapper extends BaseMapper<Document> {
 
-    @Select("SELECT EXISTS(SELECT 1 FROM user_document WHERE user_id = #{userId} AND document_id = #{documentId})")
+    @Select("SELECT EXISTS(SELECT 1 FROM document_permission WHERE user_id = #{userId} AND document_id = #{documentId})")
     boolean isCollaborator(@Param("userId") Integer userId, @Param("documentId") Integer documentId);
 
     @Select("SELECT owner_id FROM document WHERE id = #{documentId}")
     Integer getOwnerId(@Param("documentId") Integer documentId);
 
-    @Insert("INSERT INTO user_document (user_id, document_id) VALUES (#{targetUserId}, #{documentId})")
+    @Insert("INSERT INTO document_permission (user_id, document_id,permission) VALUES (#{targetUserId}, #{documentId},1)")
     void addCollaborator(@Param("targetUserId") Integer targetUserId, @Param("documentId") Integer documentId);
 
     @Select("SELECT id, owner_id, create_time, last_modified_time, title " +
@@ -43,7 +43,7 @@ public interface DocumentMapper extends BaseMapper<Document> {
     @Select("SELECT d.id, d.owner_id, u.username AS owner_name, d.create_time, d.last_modified_time, d.title " +
             "FROM document d " +
             "LEFT JOIN user u ON d.owner_id = u.id " +
-            "LEFT JOIN user_document ud ON d.id = ud.document_id AND ud.user_id = #{userId} " +
+            "LEFT JOIN document_permission ud ON d.id = ud.document_id AND ud.user_id = #{userId} " +
             "WHERE d.owner_id = #{userId} OR ud.user_id = #{userId}")
     List<DocumentInfoDto> getDocumentInfoListByUserId(@Param("userId") Integer userId);
 

@@ -51,7 +51,7 @@
   // 导航链接数据 - 翻译后的菜单项
   const links = [
     { label: '首页', path: '/' },
-    { label: '自由编程', path: '/editlist' },
+    { label: '互动课堂', path: '/editlist' },
     { label: 'OJ在线评测', path: '/problemlist' },
     { label: '班级', path: '/class' },
     //{
