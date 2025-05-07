@@ -2,6 +2,7 @@ package com.tongji.codejourneycolab.codejourneycolabbackend.controller;
 
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.DocumentContentDto;
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.DocumentInfoDto;
+import com.tongji.codejourneycolab.codejourneycolabbackend.dto.UserInfoDto;
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.FileInfoDto;
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.InvitationCodeDTO;
 import com.tongji.codejourneycolab.codejourneycolabbackend.exception.DocInvitationCodeException;
@@ -22,7 +23,8 @@ public class DocumentController {
 
     @GetMapping("/getfilelist")
     public ResponseEntity<List<DocumentInfoDto>> getFileList(@RequestAttribute Integer id) {
-        return ResponseEntity.ok(documentService.getDocumentInfoList(id)); /// TODO: handle exception
+        return ResponseEntity.ok(documentService.
+                getDocumentInfoList(id)); /// TODO: handle exception
     }
 
     @GetMapping("/getfileinfo")
@@ -100,5 +102,20 @@ public class DocumentController {
         }catch (DocPermissionException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/getUsersByDocumentId")
+    public ResponseEntity<List<UserInfoDto>> getUsersByDocumentId(
+            @RequestParam int documentId,
+            @RequestHeader("Authorization") String token) {
+
+        // 1. 验证token（如果使用Spring Security可以自动处理）
+        String jwtToken = token.replace("Bearer ", "");
+
+        // 2. 查询文档的协作者列表
+        List<UserInfoDto> collaborators = documentService.getCollaborators(documentId);
+
+        // 3. 返回结果
+        return ResponseEntity.ok(collaborators);
     }
 }

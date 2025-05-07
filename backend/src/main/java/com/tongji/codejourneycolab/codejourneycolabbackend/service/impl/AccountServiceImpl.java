@@ -87,7 +87,7 @@ public class AccountServiceImpl implements AccountService {
         if (user == null) {
             throw new InvalidCredentialsException("User not found");
         }
-        return new UserInfoDto(user.getUsername(), user.getEmail());
+        return new UserInfoDto(user.getUsername(), user.getEmail(),id);
     }
 
     @Override

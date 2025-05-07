@@ -3,6 +3,7 @@ package com.tongji.codejourneycolab.codejourneycolabbackend.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.DocumentInfoDto;
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.FileInfoDto;
+import com.tongji.codejourneycolab.codejourneycolabbackend.dto.UserInfoDto;
 import com.tongji.codejourneycolab.codejourneycolabbackend.entity.Document;
 import org.apache.ibatis.annotations.*;
 
@@ -18,6 +19,7 @@ public interface DocumentMapper extends BaseMapper<Document> {
     Integer getOwnerId(@Param("documentId") Integer documentId);
 
     @Insert("INSERT INTO document_permission (user_id, document_id,permission) VALUES (#{targetUserId}, #{documentId},1)")
+
     void addCollaborator(@Param("targetUserId") Integer targetUserId, @Param("documentId") Integer documentId);
 
     @Select("SELECT id, owner_id, create_time, last_modified_time, title " +
@@ -37,6 +39,14 @@ public interface DocumentMapper extends BaseMapper<Document> {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void createDocument(Document document);
 
+    @Insert("INSERT INTO document_permission (user_id, document_id, permission) " +
+            "VALUES (#{userId}, #{documentId}, #{permission})")
+    void addDocumentPermission(
+            @Param("userId") Integer userId,
+            @Param("documentId") Integer documentId,
+            @Param("permission") int permission
+    );
+
     @Update("UPDATE document SET code = #{content}, last_modified_time = NOW() WHERE id = #{documentId}")
     void updateContent(@Param("documentId") Integer documentId, @Param("content") String content);
 
@@ -49,4 +59,12 @@ public interface DocumentMapper extends BaseMapper<Document> {
 
     @Select("SELECT COUNT(1) FROM document WHERE id = #{documentId}")
     boolean existsDocument(@Param("documentId") Integer documentId);
+
+    @Select("""
+        SELECT u.username, u.email, u.id
+        FROM user u
+        JOIN document_permission dp ON u.id = dp.user_id
+        WHERE dp.document_id = #{documentId}
+        """)
+    List<UserInfoDto> findUsersByDocumentId(@Param("documentId") Integer documentId);
 }

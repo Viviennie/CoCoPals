@@ -2,6 +2,7 @@ package com.tongji.codejourneycolab.codejourneycolabbackend.service;
 
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.DocumentInfoDto;
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.FileInfoDto;
+import com.tongji.codejourneycolab.codejourneycolabbackend.dto.UserInfoDto;
 
 import java.util.List;
 
@@ -27,10 +28,11 @@ public interface DocumentService {
 
     void deleteDocument(Integer ownerId, Integer documentId);
 
-    DocumentInfoDto createDocument(Integer ownerId,String title);
+    DocumentInfoDto createDocument(Integer ownerId, String title);
 
     String getDocumentShareCode(Integer ownerId, Integer documentId);
 
     List<DocumentInfoDto> getDocumentInfoList(Integer userId);
 
+    List<UserInfoDto> getCollaborators(Integer documentId);
 }

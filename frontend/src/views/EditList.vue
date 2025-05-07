@@ -87,9 +87,10 @@
               编辑
             </el-button>
             <el-button
-              size="small"
-              type="danger"
-              @click="openDialog_delete(scope.$index, scope.row)"
+                v-if="showDeleteButton(scope.row)"
+                size="small"
+                type="danger"
+                @click="openDialog_delete(scope.$index, scope.row)"
             >
               删除
             </el-button>
@@ -102,14 +103,28 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, onMounted } from 'vue'
+import {computed, ref, onMounted, defineProps} from 'vue'
 import { useRouter } from 'vue-router'
 import StickyNavbar from '../components/Navbar.vue'
 import { Plus, Checked, Document } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus';
 import axios from 'axios'
 
+const user = ref({
+  name: localStorage.getItem('username'),
+  email: localStorage.getItem('useremail'),
+  nickname: localStorage.getItem('username'),
+  gender: 'male',
+  birthday: '2000-01-01',
+  school: '同济大学',
+  github: 'https://github.com/SmithTime'
+});
+const showDeleteButton = (doc: Document) => {
+  return doc.ownerName === user.value.name;
+};
+
 const router = useRouter()
+
 
 // 定义接口 Document
 interface Document {
@@ -297,8 +312,13 @@ const fetchFileList = async()=> {
       ownerName: item.ownerName,
       title: item.title
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error('获取文件列表失败:', error);
+    // 显示具体错误信息
+    if (error.response) {
+      console.error('服务器返回错误:', error.response.data);
+      ElMessage.error(`获取文件列表失败: ${error.response.data.message || error.response.status}`);
+    }
   }
 }
 

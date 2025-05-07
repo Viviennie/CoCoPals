@@ -3,6 +3,7 @@ package com.tongji.codejourneycolab.codejourneycolabbackend.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.DocumentInfoDto;
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.FileInfoDto;
+import com.tongji.codejourneycolab.codejourneycolabbackend.dto.UserInfoDto;
 import com.tongji.codejourneycolab.codejourneycolabbackend.entity.Document;
 import com.tongji.codejourneycolab.codejourneycolabbackend.exception.DocInvitationCodeException;
 import com.tongji.codejourneycolab.codejourneycolabbackend.exception.DocPermissionException;
@@ -117,6 +118,11 @@ public class DocumentServiceImpl implements DocumentService {
         // 删除文档
         documentMapper.deleteDocument(documentId);
     }
+    @Override
+    public List<UserInfoDto> getCollaborators(Integer documentId){
+        // 实现查询逻辑，例如：
+        return documentMapper.findUsersByDocumentId(documentId);
+    }
 
     @Override
     public DocumentInfoDto createDocument(Integer ownerId, String title) {
@@ -128,6 +134,13 @@ public class DocumentServiceImpl implements DocumentService {
 
         // 插入新文档记录并获取生成的文档 ID
         documentMapper.createDocument(newDocument);
+
+        // 2. 插入 document_permission 表
+        documentMapper.addDocumentPermission(
+                newDocument.getOwnerId(),
+                newDocument.getId(),
+                1  // 默认权限
+        );
 
         // 返回文档信息
         return documentMapper.getDocumentInfo(newDocument.getId());

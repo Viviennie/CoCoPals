@@ -85,9 +85,11 @@ const handleLogin = async () => {
         }
       });
       let username = response2.data.username; 
-      let useremail = response2.data.email; 
+      let useremail = response2.data.email;
+      let userid = response2.data.id;
       localStorage.setItem('username', username); 
-      localStorage.setItem('useremail', useremail); 
+      localStorage.setItem('useremail', useremail);
+      localStorage.setItem('id', userid);
       console.log('用户信息获取成功:', response2.data);
 
       // 跳转到首页
