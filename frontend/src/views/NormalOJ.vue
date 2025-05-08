@@ -39,6 +39,7 @@
             :selectedLanguage="selectedLanguage"
             height= "150px"
             width="730px"
+            :canCollaborate="true"
           />
         </div>
       </div>
