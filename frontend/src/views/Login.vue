@@ -5,7 +5,7 @@
       <div class="form-container">
         <div style="display: flex;justify-content: space-between;">
           <h1 class="opacity">登录</h1>
-          <ModelViewer />
+          <img src="/logo.png" alt="logo" class="logo" />
         </div>
         <form @submit.prevent="handleLogin">
           <input
@@ -150,7 +150,7 @@ h1 {
   height: 100vh;
   overflow: hidden;
   gap: 5px;
-  background: linear-gradient(45deg, #9BBCC3, #CBA5D1);
+  background: linear-gradient(45deg, #aeecf9, rgb(255, 252, 198));
 }
 
 .login-container {
@@ -261,5 +261,9 @@ h1 {
     transform: scale(1);
   }
 }
+.logo {
+    width: 160px;
+    height: auto;
+  }
 
 </style>

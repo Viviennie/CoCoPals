@@ -5,7 +5,7 @@
       <div class="form-container">
         <div style="display: flex; justify-content: space-between;">
           <h1 class="opacity" style="font-size: 30px;">注册账号</h1>
-          <ModelViewer />
+          <img src="/logo.png" alt="logo" class="logo" />
         </div>
         <form @submit.prevent="handleRegister">
           <input
@@ -120,7 +120,7 @@ h1 {
   align-items: center;
   height: 100vh;
   overflow: hidden;
-  background: linear-gradient(45deg, #9BBCC3,#CBA5D1);
+  background: linear-gradient(45deg, #aeecf9, rgb(255, 252, 198));
 }
 
 .register-container {
@@ -231,5 +231,9 @@ h1 {
   100% {
     transform: scale(1);
   }
+}
+.logo {
+    width: 160px;
+    height: auto;
 }
 </style>
