@@ -10,7 +10,7 @@
   import * as THREE from 'three';
   
   // 定义模型文件路径
-  const illustrationSrc = '/unicorn.gltf'; // Vue 会自动将 / 识别为 public 文件夹
+  const illustrationSrc = '/logo.png'; // Vue 会自动将 / 识别为 public 文件夹
   
   // 使用 Vue 的 ref 引用 canvas 容器
   const canvasContainer = ref<HTMLDivElement | null>(null);
