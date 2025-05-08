@@ -27,6 +27,7 @@
     "pinia": "^3.0.2",
     "reconnecting-websocket": "^4.4.0",
     "sharedb": "^5.1.1",
+    "socket.io-client": "^4.8.1",
     "sortablejs": "^1.15.3",
     "three": "^0.169.0",
     "util": "^0.12.5",

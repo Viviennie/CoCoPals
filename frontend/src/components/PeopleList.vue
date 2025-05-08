@@ -155,7 +155,7 @@ const toggleSidebar = () => {
 const toggleUserMic = (userId: number) => {
   const user = currentClass.value?.users.find(u => u.id === userId);
   if (user) {
-    user.micEnabled = !user.micEnabled;
+    classStore.updateUserMic(props.documentId,userId,!user.micEnabled);
   }
 };
 
@@ -163,7 +163,7 @@ const toggleUserMic = (userId: number) => {
 const toggleUserCollaboration = (userId: number) => {
   const user = currentClass.value?.users.find(u => u.id === userId);
   if (user) {
-    user.canCollaborate = !user.canCollaborate;
+    classStore.updateUserCollaboration(props.documentId,userId,!user.canCollaborate);
   }
 };
 </script>

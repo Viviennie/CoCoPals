@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { io, Socket } from 'socket.io-client'
 
 interface User {
     id: number
@@ -9,7 +10,7 @@ interface User {
 }
 
 interface ClassItem {
-    documentId: Number
+    documentId: number
     classId: string | null
     startTime: Date
     endTime: Date | null
@@ -18,51 +19,101 @@ interface ClassItem {
 
 export const useClassStore = defineStore('class', () => {
     const classes = ref<ClassItem[]>([])
+    const socket = ref<Socket | null>(null)
+    const isConnected = ref(false)
+
+    // 初始化 WebSocket 连接
+    const initWebSocket = () => {
+        if (socket.value) return
+
+        // 创建 Socket.IO 连接
+        socket.value = io('ws://localhost:8443', {
+            transports: ['websocket'], // 强制使用 WebSocket
+        })
+
+        socket.value.on('connect', () => {
+            isConnected.value = true
+            console.log('WebSocket connected')
+        })
+
+        socket.value.on('disconnect', () => {
+            isConnected.value = false
+            console.log('WebSocket disconnected')
+        })
+
+        // 监听状态同步消息
+        socket.value.on('syncState', (message: { state: ClassItem[] }) => {
+            classes.value = message.state.map(classItem => ({
+                ...classItem,
+                startTime: new Date(classItem.startTime),
+                endTime: classItem.endTime ? new Date(classItem.endTime) : null
+            }))
+        })
+    }
 
     // 添加新课程
     const addClass = (documentId: number, users: User[]) => {
-        // 检查是否已存在相同documentId的课程
-        const existingClass = classes.value.find(c => c.documentId === documentId);
-        if (existingClass) {
-            console.log(`课程已存在，documentId: ${documentId}`);
-            return;
+        if (!socket.value || !isConnected.value) {
+            console.error('WebSocket not connected')
+            return
         }
-        const newClass: ClassItem = {
-            documentId: documentId,
-            classId: null, // 暂时设为null
-            startTime: new Date(),
-            endTime: null,
-            users: users.map(user => ({
-                ...user,
-                canCollaborate: user.canCollaborate // 保持原有值
-            }))
-        }
-        classes.value.push(newClass)
+
+        socket.value.emit('message', {
+            type: 'addClass',
+            documentId,
+            users
+        })
     }
 
     // 结束课程
     const endClass = (documentId: number) => {
-        const classItem = classes.value.find(c => c.documentId === documentId)
-        if (classItem) {
-            classItem.endTime = new Date()
+        if (!socket.value || !isConnected.value) {
+            console.error('WebSocket not connected')
+            return
         }
+
+        socket.value.emit('message', {
+            type: 'endClass',
+            documentId
+        })
     }
 
     // 更新用户协作权限
     const updateUserCollaboration = (documentId: number, userId: number, canCollaborate: boolean) => {
-        const classItem = classes.value.find(c => c.documentId === documentId)
-        if (classItem) {
-            const user = classItem.users.find(u => u.id === userId)
-            if (user) {
-                user.canCollaborate = canCollaborate
-            }
+        if (!socket.value || !isConnected.value) {
+            console.error('WebSocket not connected')
+            return
         }
+        socket.value.emit('message', {
+            type: 'updateUserCollaboration',
+            documentId,
+            userId,
+            canCollaborate
+        })
     }
+
+    // 更新用户协作权限
+    const updateUserMic = (documentId: number, userId: number, micEnabled: boolean) => {
+        if (!socket.value || !isConnected.value) {
+            console.error('WebSocket not connected')
+            return
+        }
+        socket.value.emit('message', {
+            type: 'updateUserMic',
+            documentId,
+            userId,
+            micEnabled
+        })
+    }
+    // 组件挂载时初始化 WebSocket
+    initWebSocket()
 
     return {
         classes,
+        isConnected,
         addClass,
         endClass,
-        updateUserCollaboration
+        updateUserCollaboration,
+        updateUserMic
     }
 })
