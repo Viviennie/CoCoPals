@@ -53,21 +53,27 @@ io.on("connection", (socket) => {
                         (c) => c.documentId === message.documentId
                     );
                     if (existingClass) {
-                        console.log(`课程已存在，documentId: ${message.documentId}`);
-                        return;
-                    }
+                        console.log(`课程已存在，更新用户列表，documentId: ${message.documentId}`);
 
-                    const newClass: ClassItem = {
-                        documentId: message.documentId,
-                        classId: null,
-                        startTime: new Date().toISOString(),
-                        endTime: null,
-                        users: message.users.map((user) => ({
+                        // 更新现有课程的 users
+                        existingClass.users = message.users.map((user) => ({
                             ...user,
                             canCollaborate: user.canCollaborate,
-                        })),
-                    };
-                    classes.push(newClass);
+                        }));
+                    } else {
+                        // 如果课程不存在，创建新课程
+                        const newClass: ClassItem = {
+                            documentId: message.documentId,
+                            classId: null,
+                            startTime: new Date().toISOString(),
+                            endTime: null,
+                            users: message.users.map((user) => ({
+                                ...user,
+                                canCollaborate: user.canCollaborate,
+                            })),
+                        };
+                        classes.push(newClass);
+                    }
                     break;
                 }
 
