@@ -11,6 +11,7 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
+              :disabled="!canCollaborate"
             />
           </el-select>
         </div>
@@ -31,9 +32,9 @@
 
       <div>
         <el-button-group class="ml-4">
-          <el-button type="primary" :icon="Upload" />
-          <el-button type="primary" :icon="Download" />
-          <el-button type="primary" :icon="Share" @click="inviteOthers()" />
+          <el-button type="primary" :icon="Upload" :disabled="!canCollaborate"/>
+          <el-button type="primary" :icon="Download" :disabled="!canCollaborate"/>
+          <el-button type="primary" :icon="Share" @click="inviteOthers()" :disabled="!canCollaborate"/>
         </el-button-group>
       </div>
     </div>
@@ -47,6 +48,7 @@
       :indent-with-tab="true"
       :tab-size="2"
       :extensions="extensions"
+      :disabled="!canCollaborate"
     />
   </div>
   <!-- 弹窗展示邀请码 -->
@@ -95,6 +97,7 @@ const props = defineProps<{
   height: string;
   width: string;
   documentId: number;
+  canCollaborate: boolean;
 }>();
 
 // Emit 用于向父组件发送更新事件

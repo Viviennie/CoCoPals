@@ -121,31 +121,29 @@
 
 <script lang="ts" setup>
 import {ref, computed, onMounted} from 'vue';
+import {useClassStore} from "../stores/classStore";
 
+const classStore = useClassStore();
 const isOpen = ref(false);
 
-interface Users{
-  id: number;
-  name: string;
-  micEnabled: boolean;
-  canCollaborate: boolean;
-}
-
 const props = defineProps<{
-  users: Users[]
+  documentId: Number
 }>();
 
 const userRole = ref(localStorage.getItem("role") || '');
 const userId = Number(localStorage.getItem("id"));
 
+const currentClass = computed(() => {
+  return classStore.classes.find(c => c.documentId === props.documentId);
+});
 // 计算属性：获取当前用户
 const currentUser = computed(() => {
-  return props.users.find(user => user.id === userId);
+  return currentClass.value?.users.find(user => user.id === userId);
 });
 
 // 计算属性：获取其他用户（排除当前用户）
 const otherUsers = computed(() => {
-  return props.users.filter(user => user.id !== userId);
+  return currentClass.value?.users.filter(user => user.id !== userId);
 });
 
 // 切换侧边栏的打开/关闭状态
@@ -155,7 +153,7 @@ const toggleSidebar = () => {
 
 // 切换用户麦克风状态
 const toggleUserMic = (userId: number) => {
-  const user = props.users.find(u => u.id === userId);
+  const user = currentClass.value?.users.find(u => u.id === userId);
   if (user) {
     user.micEnabled = !user.micEnabled;
   }
@@ -163,17 +161,11 @@ const toggleUserMic = (userId: number) => {
 
 // 切换用户协作权限（仅老师可用）
 const toggleUserCollaboration = (userId: number) => {
-  const user = props.users.find(u => u.id === userId);
+  const user = currentClass.value?.users.find(u => u.id === userId);
   if (user) {
     user.canCollaborate = !user.canCollaborate;
   }
 };
-
-onMounted(() => {
-  if (currentUser.value && userRole.value === "TEACHER") {
-    currentUser.value.canCollaborate = true;
-  }
-});
 </script>
 
 <style scoped>

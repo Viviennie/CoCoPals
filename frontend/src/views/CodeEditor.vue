@@ -1,7 +1,7 @@
 <template>
   <StickyNavbar/>
   <UserList
-      :users="fetchedUsers"
+      :documentId="documentId"
   />
   <div class="wrapper-ce">
     <div class="inner-wrapper">
@@ -13,8 +13,8 @@
             :selectedLanguage="selectedLanguage"
             height="500px"
             width="200px"
+            :canCollaborate="canCollaborate"
         />
-        <div v-if="!canCollaborate" class="overlay"></div>
       </div>
 
       <div class="code-section">
@@ -48,8 +48,8 @@
               height="500px"
               width="900px"
               :documentId=documentId
+              :canCollaborate="canCollaborate"
           />
-          <div v-if="!canCollaborate" class="overlay"></div>
         </div>
       </div>
     </div>
@@ -57,18 +57,20 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import SharedbCodeMirror from '../components/SharedbCodeMirror.vue';
 import CodeRunner from '../components/CodeRunner.vue';
 import StickyNavbar from '../components/Navbar.vue';
 import UserList from '../components/PeopleList.vue';
+import {useClassStore} from '../stores/classStore';
 import axios from 'axios';
-import { useRoute,useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import {useRoute, useRouter} from 'vue-router';
+import {ElMessage} from 'element-plus';
 
 // 获取路由中的参数
 const route = useRoute();
 const router = useRouter();
+const classStore = useClassStore();
 
 // 管理在 Main 组件中共享的状态
 const documentId = ref<number>(0);
@@ -93,25 +95,17 @@ const fetchFileInfo = async () => {
       owner: response.data.ownerName,
       createdAt: response.data.createTime,
     };
+    return fileInfo.value.title; // 返回文档名称
   } catch (error) {
     ElMessage.error('获取文件信息失败');
     console.error('获取文件信息失败:', error)
+    return '';
   }
 }
 
 // 获取用户角色
 const userRole = ref(localStorage.getItem("role") || '');
 const userId = ref(localStorage.getItem("id")||'');
-
-interface Users{
-  id: number;
-  name: string;
-  micEnabled: boolean;
-  canCollaborate: boolean;
-}
-
-const fetchedUsers = ref<Users[]>([]);
-const canCollaborate = ref(false);
 
 const fetchUsers = async () => {
   try {
@@ -120,47 +114,51 @@ const fetchUsers = async () => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
-    fetchedUsers.value = response.data.map((user:any) => ({
+
+    console.log(response.data)
+    console.log(fileInfo.value.owner)
+    return response.data.map((user: any) => ({
       id: user.id,
       name: user.username,
-      canCollaborate: false,
+      canCollaborate: user.username === fileInfo.value.owner,
       micEnabled: false,
     }));
-
-    const currentUser = fetchedUsers.value.find(user => user.id === Number(userId.value));
-    if(currentUser){
-      currentUser.canCollaborate = userRole.value === "TEACHER";
-      canCollaborate.value = currentUser.canCollaborate;
-    }
   } catch (error) {
     ElMessage.error('获取协作者列表失败');
     console.error('获取协作者列表失败:', error)
+    return [];
   }
 }
 
-// 时间戳记录
-const classStartTime = ref<Date | null>(null);
-const classEndTime = ref<Date | null>(null);
+// 计算当前课程
+const currentClass = computed(() => {
+  return classStore.classes.find(c => c.documentId === documentId.value);
+});
+
+// 计算当前用户的协作权限
+const canCollaborate = computed(() => {
+  const user = currentClass.value?.users.find(u => u.id === Number(userId.value));
+  return user?.canCollaborate || false;
+});
 
 // 结束课堂 (老师)
 const endClass = async () => {
-  classEndTime.value = new Date();
-  console.log('课堂结束时间:', classEndTime.value.toLocaleString());
+  // const documentName = await fetchFileInfo();
+  // classStore.endClass(documentName);
   router.back();
 }
 
-const exitClass = () =>{
+const exitClass = () => {
   router.back();
 }
 
-onMounted(() => {
-  if(userRole.value==="TEACHER"){
-    classStartTime.value = new Date();
-    console.log('课堂开始时间:', classStartTime.value.toLocaleString());
-  }
+onMounted(async () => {
   documentId.value = Number(route.query.documentId);
-  fetchFileInfo();
-  fetchUsers();
+  await fetchFileInfo();
+  const users = await fetchUsers();
+
+  // 添加到课程列表
+  classStore.addClass(documentId.value, users);
 });
 </script>
 
@@ -229,20 +227,5 @@ onMounted(() => {
 
 .exit-class-btn:hover {
   background-color: #fff2f0;
-}
-
-.component-wrapper {
-  position: relative;
-}
-
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  pointer-events: all;
-  cursor: not-allowed;
 }
 </style>

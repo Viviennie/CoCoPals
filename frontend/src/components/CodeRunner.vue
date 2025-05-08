@@ -1,7 +1,14 @@
 <template>
   <div class="container">
-    <div class="btn">
-      <el-button @click="runCode" type="primary">运行</el-button>
+    <div class="header">
+      <el-button
+          @click="runCode"
+          type="primary"
+          :disabled="!canCollaborate"
+          class="run-button"
+      >
+        运行
+      </el-button>
     </div>
     <el-tabs class="demo-tabs" :style="{ width: props.width, height: props.height}">
       <!-- 参数输入 -->
@@ -12,13 +19,14 @@
           v-model="parameters"
           placeholder="输入参数..."
           style="margin-top: 10px; width: 100%; height: 100%;"
+          :disabled="!props.canCollaborate"
         />
       </el-tab-pane>
 
       <!-- 显示结果 -->
       <el-tab-pane label="输出">
         <div class="result-container">
-          <pre style="color: 616161;">{{ result }}</pre>
+          <pre style="color: #616161;">{{ result }}</pre>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -35,6 +43,7 @@ const props = defineProps<{
   selectedLanguage: string;
   height:string;
   width:string;
+  canCollaborate: boolean;
 }>();
 
 // 本地状态
@@ -96,11 +105,16 @@ const runCode = async () => {
   border-radius: 5px;
 }
 
-.btn {
+.header {
   display: flex;
-  margin: 10px;
+  justify-content: flex-start; /* 按钮靠左对齐 */
+  width: 100%;
+  margin-bottom: 10px;
 }
 
+.run-button {
+  margin-left: 0; /* 确保按钮紧贴左侧 */
+}
 .result-container {
   height: 120px;
   overflow: scroll;
