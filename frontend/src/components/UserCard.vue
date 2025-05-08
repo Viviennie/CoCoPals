@@ -18,7 +18,7 @@
         </el-icon>
       </div>
       <div class="info-item email-container">
-        <span class="email" >角色:{{ role === 'TEACHER' ? '教师' : '学生' }}</span>
+        <span class="email" >角色:{{ role === 'teacher' ? '教师' : '学生' }}</span>
         <el-icon
           :style="{ cursor: 'pointer', marginLeft: '5px', }"
           @click="openCertificateDialog"
@@ -122,7 +122,7 @@
   const name = ref(props.user.name);
   const email = ref(props.user.email);
   const isDialogVisible = ref(false);
-  const role = localStorage.getItem('role')=='TEACHER'?'teacher':'student';
+  const role = ref(localStorage.getItem('role')=='TEACHER'?'teacher':'student');
   const isDialogVisible2 = ref(false);
 
   const setActiveSection = (section: string) => {
@@ -223,11 +223,10 @@
       ElMessage.error('No files selected');
       return;
     }
-
     const formData = new FormData();
     fileList.value.forEach(file => {
       if (file.raw) {
-        formData.append('files', file.raw); 
+        formData.append('files', file.raw);
       }
     });
 
@@ -236,12 +235,14 @@
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
+          'id': Number(localStorage.getItem('id')) // 假设你存了用户ID
         },
       });
       console.log(response.data);
       ElMessage.success('You are Certified!');
       localStorage.setItem('role','TEACHER');
-      isDialogVisible2.value = false; 
+      role.value = "teacher";
+      isDialogVisible2.value = false;
     } catch (error:any) {
       if(error.response){
         ElMessage.error(error);

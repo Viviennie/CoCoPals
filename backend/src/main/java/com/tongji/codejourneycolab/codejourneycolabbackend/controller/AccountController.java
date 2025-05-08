@@ -78,10 +78,11 @@ public class AccountController {
 
     @PostMapping(value ="/tqc",consumes= MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> teacherQualify(
-            @RequestAttribute Integer id,
+            @RequestHeader("id") Integer id,
             @RequestPart("files") MultipartFile[] files) {
         try {
             // 处理文件上传逻辑
+
             accountService.teacherQualifyById(id, files);
             return ResponseEntity.ok("Teacher qualify success");
         } catch (Exception e) {

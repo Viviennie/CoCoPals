@@ -14,7 +14,7 @@ import java.util.regex.*;
 public class PythonExecutionService {
 
     // python程序的绝对路径，在windows中用"\\"分隔，在Linux中用"/"分隔
-    String pyPath = "D:\\APP\\PYTHON\\python.exe";  // Python解释器路径
+    String pyPath = "\"F:\\pycharm_work\\pythonProject\\.venv\\Scripts\\python.exe\"";  // Python解释器路径
 
     // 临时文件路径，用来存储代码
     String codeFilePath = "D:\\cjcl.py";
