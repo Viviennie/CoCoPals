@@ -16,6 +16,8 @@ interface ClassItem {
     endTime: Date | null
     users: User[]
     annotations: ArrayBuffer
+    scrollLeft: number
+    scrollTop: number
 }
 
 export const useClassStore = defineStore('class', () => {
@@ -118,6 +120,19 @@ export const useClassStore = defineStore('class', () => {
             annotations
         })
     }
+
+    const updateScroll = (documentId: number, scrollLeft: number, scrollTop: number) => {
+        if (!socket.value || !isConnected.value) {
+            console.error('WebSocket not connected')
+            return
+        }
+        socket.value.emit('message', {
+            type: 'updateScroll',
+            documentId,
+            scrollLeft,
+            scrollTop
+        })
+    }
     // 组件挂载时初始化 WebSocket
     initWebSocket()
 
@@ -128,6 +143,7 @@ export const useClassStore = defineStore('class', () => {
         endClass,
         updateUserCollaboration,
         updateUserMic,
-        updateAnnotations
+        updateAnnotations,
+        updateScroll
     }
 })

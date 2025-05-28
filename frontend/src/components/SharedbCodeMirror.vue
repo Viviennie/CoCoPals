@@ -40,15 +40,17 @@
     </div>
     <!-- CodeMirror 编辑器 -->
     <codemirror
+        ref="editorInstance"
         :key="editorKey"
         v-model="localCode"
         placeholder="在此输入代码..."
-        :style="{ width: props.width, height: props.height }"
+        :style="{width: props.width,height: props.height,pointerEvents: !canCollaborate ? 'none' : ''}"
         :autofocus="true"
         :indent-with-tab="true"
         :tab-size="2"
         :extensions="extensions"
         :disabled="!canCollaborate"
+        @ready="handleEditorReady"
     />
   </div>
   <!-- 弹窗展示邀请码 -->
@@ -78,7 +80,7 @@
 
 <script setup lang="ts">
 import {CopyDocument, Share, Upload, Download, Place} from '@element-plus/icons-vue';
-import { ref, watch, onMounted, computed } from 'vue';
+import {ref, watch, onMounted, computed, onUnmounted, nextTick} from 'vue';
 import { Codemirror } from "vue-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { python } from "@codemirror/lang-python";
@@ -89,7 +91,14 @@ import { Connection, } from 'sharedb/lib/client';
 import { ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
-import AnnotationLayer from "@/components/AnnotationLayer.vue";
+import {useClassStore} from "../stores/classStore";
+import { debounce } from "lodash-es";
+
+const classStore = useClassStore();
+
+const currentClass = computed(() => {
+  return classStore.classes.find(c => c.documentId === props.documentId);
+});
 
 // Props 接收从父组件传递过来的数据
 const props = defineProps<{ 
@@ -112,7 +121,6 @@ const localCode = ref(props.code);  // 代码
 const localSelectedLanguage = ref(props.selectedLanguage);  // 选择的语言
 const selectedTheme = ref<string>("oneDark");  // 默认主题
 const editorKey = ref(0);  // 用于强制重新渲染编辑器
-const editorInstance = ref(null); // 保存编辑器实例
 const documentId = ref(props.documentId);
 const inviteCode = ref<string>(''); // 用于存储邀请码
 const dialogVisible = ref(false); // 控制弹窗的显示
@@ -146,7 +154,7 @@ const iconStyle = computed(() => {
 });
 
 // CodeMirror 扩展配置
-let extensions = [python(), oneDark];
+let extensions = [python(), oneDark,];
 
 const languageExtensions: Record<string, any> = {
   python: python(),
@@ -359,6 +367,52 @@ const initializeShareDB = async()=> {
   
 };
 
+const isRemoteScroll = ref(false);
+
+// 防抖优化滚动事件（避免频繁触发）
+const debouncedUpdateScroll = debounce((top, left) => {
+  classStore.updateScroll(props.documentId, left, top);
+}, 100); // 100ms 防抖间隔
+
+const editorView = ref<EditorView|null>(null) // 存储编辑器实例
+
+const handleEditorReady = (view:any) => {
+  editorView.value = view;
+  // 监听编辑器自带的滚动事件（本地触发）
+  view.view.scrollDOM.addEventListener('scroll', () => {
+    if (isRemoteScroll.value) {
+      isRemoteScroll.value = false;
+      return;
+    }
+    debouncedUpdateScroll(view.view.scrollDOM.scrollTop, view.view.scrollDOM.scrollLeft);
+  });
+}
+
+onUnmounted(() => {
+  debouncedUpdateScroll.cancel();
+});
+
+watch(
+    () => ({
+      left: currentClass.value?.scrollLeft,
+      top: currentClass.value?.scrollTop,
+    }),
+    ({ left, top }) => {
+      if (!editorView.value) return;
+
+      // 标记为远程滚动，避免循环
+      isRemoteScroll.value = true;
+
+      console.log("更新滚动")
+      // 方法1：直接操作滚动DOM
+      editorView.value.view.scrollDOM.scrollTo({
+        top,
+        left,
+        behavior: 'auto' // 可选平滑滚动
+      })
+    },
+    { deep: true }
+);
 // // 光标
 // let presence: ShareDB.Presence;
 // let editor: any; 

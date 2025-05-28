@@ -58,6 +58,7 @@
 import { ref, onMounted, watch, nextTick, computed, onBeforeUnmount } from 'vue';
 
 import {useClassStore} from "../stores/classStore";
+import {ElMessageBox} from "element-plus";
 const classStore = useClassStore();
 
 const props = defineProps({
@@ -211,14 +212,21 @@ const startDrawing = (e: MouseEvent) => {
   [startX.value, startY.value] = [e.offsetX, e.offsetY];
 
   if (selectedTool.value === 'text') {
-    const text = prompt('请输入文字:', '');
-    if (text && ctx.value) {
-      ctx.value.font = `${parseInt(selectedWidth.value) * 5}px Arial`;
-      ctx.value.fillStyle = selectedColor.value;
-      ctx.value.fillText(text, lastX.value, lastY.value);
-    }
-    isDrawing.value = false;
-    saveAnnotations();
+    ElMessageBox.prompt('请输入文字:', '文字输入', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+    }).then(({ value }) => {
+      if (value && ctx.value) {
+        ctx.value.font = `${parseInt(selectedWidth.value) * 5}px Arial`;
+        ctx.value.fillStyle = selectedColor.value;
+        ctx.value.fillText(value, lastX.value, lastY.value);
+        isDrawing.value = false;
+        saveAnnotations();
+      }
+    }).catch(() => {
+      // 用户点击取消
+      isDrawing.value = false;
+    });
     return;
   }
 

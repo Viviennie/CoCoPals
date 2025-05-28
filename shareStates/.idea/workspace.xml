@@ -5,13 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2f190202-df67-4a71-b805-d49b9e99dbaa" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/../frontend/src/components/AnnotationLayer.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/components/AnnotationLayer.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/AnnotationLayer.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/components/SharedbCodeMirror.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/SharedbCodeMirror.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/stores/classStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/stores/classStore.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/views/CodeEditor.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/views/CodeEditor.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types.ts" afterDir="false" />
     </list>
@@ -37,7 +34,7 @@
     "Node.js.types.ts.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "zwl",
+    "git-widget-placeholder": "lzn",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -68,6 +65,7 @@
       <workItem from="1748331518221" duration="434000" />
       <workItem from="1748332065669" duration="780000" />
       <workItem from="1748419406488" duration="3892000" />
+      <workItem from="1748439257589" duration="6759000" />
     </task>
     <servers />
   </component>

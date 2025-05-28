@@ -12,6 +12,8 @@ export interface ClassItem {
     endTime: string | null
     users: User[]
     annotations: Blob | null
+    scrollLeft: number
+    scrollTop: number
 }
 
 export type MessageType = 
@@ -21,3 +23,4 @@ export type MessageType =
     | { type: 'syncState', state: ClassItem[] }
     | { type: 'updateUserMic', documentId: number, userId: number, micEnabled: boolean }
     | { type: 'updateAnnotations', documentId: number, annotations: Blob }
+    | { type: 'updateScroll', documentId: number, scrollLeft: number, scrollTop: number }

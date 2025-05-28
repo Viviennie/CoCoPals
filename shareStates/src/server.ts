@@ -72,7 +72,9 @@ io.on("connection", (socket) => {
                                 ...user,
                                 canCollaborate: user.canCollaborate,
                             })),
-                            annotations: null
+                            annotations: null,
+                            scrollLeft: 0,
+                            scrollTop: 0
                         };
                         classes.push(newClass);
                     }
@@ -129,6 +131,18 @@ io.on("connection", (socket) => {
                     );
                     if (classItem) {
                         classItem.annotations = message.annotations;
+                    }
+                    break;
+                }
+
+                case "updateScroll": {
+                    console.log("更新翻页情况");
+                    const classItem = classes.find(
+                        (c) => c.documentId === message.documentId
+                    );
+                    if (classItem) {
+                        classItem.scrollLeft = message.scrollLeft;
+                        classItem.scrollTop = message.scrollTop;
                     }
                     break;
                 }
