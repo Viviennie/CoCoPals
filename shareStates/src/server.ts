@@ -49,6 +49,7 @@ io.on("connection", (socket) => {
         try {
             switch (message.type) {
                 case "addClass": {
+                    console.log("添加课程");
                     const existingClass = classes.find(
                         (c) => c.documentId === message.documentId
                     );
@@ -71,6 +72,7 @@ io.on("connection", (socket) => {
                                 ...user,
                                 canCollaborate: user.canCollaborate,
                             })),
+                            annotations: null
                         };
                         classes.push(newClass);
                     }
@@ -78,6 +80,7 @@ io.on("connection", (socket) => {
                 }
 
                 case "endClass": {
+                    console.log("结束课程");
                     const classItem = classes.find(
                         (c) => c.documentId === message.documentId
                     );
@@ -88,6 +91,7 @@ io.on("connection", (socket) => {
                 }
 
                 case "updateUserCollaboration": {
+                    console.log("更新用户共享权限");
                     const classItem = classes.find(
                         (c) => c.documentId === message.documentId
                     );
@@ -103,6 +107,7 @@ io.on("connection", (socket) => {
                 }
 
                 case "updateUserMic": {
+                    console.log("更新用户麦克风权限");
                     const classItem = classes.find(
                         (c) => c.documentId === message.documentId
                     );
@@ -113,6 +118,17 @@ io.on("connection", (socket) => {
                         if (user) {
                             user.micEnabled = message.micEnabled;
                         }
+                    }
+                    break;
+                }
+
+                case "updateAnnotations": {
+                    console.log("更新批注");
+                    const classItem = classes.find(
+                        (c) => c.documentId === message.documentId
+                    );
+                    if (classItem) {
+                        classItem.annotations = message.annotations;
                     }
                     break;
                 }

@@ -15,6 +15,7 @@ interface ClassItem {
     startTime: Date
     endTime: Date | null
     users: User[]
+    annotations: ArrayBuffer
 }
 
 export const useClassStore = defineStore('class', () => {
@@ -105,6 +106,18 @@ export const useClassStore = defineStore('class', () => {
             micEnabled
         })
     }
+
+    const updateAnnotations = (documentId: number, annotations: Blob) => {
+        if (!socket.value || !isConnected.value) {
+            console.error('WebSocket not connected')
+            return
+        }
+        socket.value.emit('message', {
+            type: 'updateAnnotations',
+            documentId,
+            annotations
+        })
+    }
     // 组件挂载时初始化 WebSocket
     initWebSocket()
 
@@ -114,6 +127,7 @@ export const useClassStore = defineStore('class', () => {
         addClass,
         endClass,
         updateUserCollaboration,
-        updateUserMic
+        updateUserMic,
+        updateAnnotations
     }
 })

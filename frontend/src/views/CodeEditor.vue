@@ -24,6 +24,14 @@
           <p><strong>创建时间：</strong> {{ fileInfo.createdAt }}</p>
           <div class="class-control">
             <button
+                v-if="canAnnotate"
+                @click="toggleAnnotation"
+                class="annotation-btn"
+                :class="{ 'active': isAnnotating }"
+            >
+              {{ isAnnotating ? '结束批注' : '开始批注' }}
+            </button>
+            <button
                 v-if="userRole === 'TEACHER'"
                 @click="endClass"
                 class="end-class-btn"
@@ -39,8 +47,9 @@
             </button>
           </div>
         </div>
+
         <!-- 语言选择器和主题选择器以及代码编辑器 -->
-        <div class="component-wrapper">
+        <div class="component-wrapper" ref="editorWrapper" style="position: relative;">
           <SharedbCodeMirror
               v-if="documentId !== 0"
               v-model:code="code"
@@ -50,6 +59,20 @@
               :documentId=documentId
               :canCollaborate="canCollaborate"
           />
+          <AnnotationLayer
+              :width="920"
+              :height="562"
+              :isAnnotating="isAnnotating && canAnnotate"
+              :showToolbar="isAnnotating && canAnnotate"
+              :documentId="documentId"
+              :style="{
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                zIndex: '100',
+                pointerEvents: isAnnotating && canAnnotate ? 'auto' : 'none'
+              }"
+          />
         </div>
       </div>
     </div>
@@ -57,11 +80,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
+import {computed, nextTick, onMounted, ref} from 'vue';
 import SharedbCodeMirror from '../components/SharedbCodeMirror.vue';
 import CodeRunner from '../components/CodeRunner.vue';
 import StickyNavbar from '../components/Navbar.vue';
 import UserList from '../components/PeopleList.vue';
+import AnnotationLayer from '../components/AnnotationLayer.vue';
 import {useClassStore} from '../stores/classStore';
 import axios from 'axios';
 import {useRoute, useRouter} from 'vue-router';
@@ -83,6 +107,10 @@ const fileInfo = ref({
   createdAt: '',
 });
 
+// 批注相关状态
+const isAnnotating = ref(false);
+const canAnnotate = computed(() => fileInfo.value.owner === localStorage.getItem('username'));
+
 const fetchFileInfo = async () => {
   try {
     const response = await axios.get(`http://localhost:8048/document/getfileinfo?documentId=${documentId.value}`,{
@@ -95,7 +123,7 @@ const fetchFileInfo = async () => {
       owner: response.data.ownerName,
       createdAt: response.data.createTime,
     };
-    return fileInfo.value.title; // 返回文档名称
+    return fileInfo.value.title;
   } catch (error) {
     ElMessage.error('获取文件信息失败');
     console.error('获取文件信息失败:', error)
@@ -138,13 +166,18 @@ const currentClass = computed(() => {
 // 计算当前用户的协作权限
 const canCollaborate = computed(() => {
   const user = currentClass.value?.users.find(u => u.id === Number(userId.value));
+  console.log("当前用户操作权限"+user.canCollaborate)
   return user?.canCollaborate || false;
 });
 
+// 批注功能
+const toggleAnnotation = () => {
+  isAnnotating.value = !isAnnotating.value;
+};
+
+
 // 结束课堂 (老师)
 const endClass = async () => {
-  // const documentName = await fetchFileInfo();
-  // classStore.endClass(documentName);
   router.back();
 }
 
@@ -185,18 +218,40 @@ onMounted(async () => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative; /* 添加相对定位 */
 }
 
 .title {
   display: flex;
   justify-content: space-between;
-  align-items:center;
-  width:100%;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .class-control {
   display: flex;
-  align-items:center;
+  align-items: center;
+  gap: 10px;
+}
+
+.annotation-btn {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.annotation-btn:hover {
+  background-color: #40a9ff;
+}
+
+.annotation-btn.active {
+  background-color: #096dd9;
 }
 
 .end-class-btn {

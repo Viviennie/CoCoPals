@@ -40,15 +40,15 @@
     </div>
     <!-- CodeMirror 编辑器 -->
     <codemirror
-      :key="editorKey"
-      v-model="localCode"
-      placeholder="在此输入代码..."
-      :style="{ width: props.width, height: props.height }"
-      :autofocus="true"
-      :indent-with-tab="true"
-      :tab-size="2"
-      :extensions="extensions"
-      :disabled="!canCollaborate"
+        :key="editorKey"
+        v-model="localCode"
+        placeholder="在此输入代码..."
+        :style="{ width: props.width, height: props.height }"
+        :autofocus="true"
+        :indent-with-tab="true"
+        :tab-size="2"
+        :extensions="extensions"
+        :disabled="!canCollaborate"
     />
   </div>
   <!-- 弹窗展示邀请码 -->
@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { CopyDocument, Share, Upload, Download } from '@element-plus/icons-vue';
+import {CopyDocument, Share, Upload, Download, Place} from '@element-plus/icons-vue';
 import { ref, watch, onMounted, computed } from 'vue';
 import { Codemirror } from "vue-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -89,6 +89,7 @@ import { Connection, } from 'sharedb/lib/client';
 import { ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import AnnotationLayer from "@/components/AnnotationLayer.vue";
 
 // Props 接收从父组件传递过来的数据
 const props = defineProps<{ 
@@ -445,5 +446,10 @@ const initializeShareDB = async()=> {
 .inner-selector {
   display: flex;
   gap: 1rem;
+}
+.code-editor-container {
+  position: relative;
+  width: 900px;
+  height: 500px;
 }
 </style>

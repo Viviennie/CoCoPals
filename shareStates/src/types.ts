@@ -11,6 +11,7 @@ export interface ClassItem {
     startTime: string  // 使用字符串便于序列化
     endTime: string | null
     users: User[]
+    annotations: Blob | null
 }
 
 export type MessageType = 
@@ -19,3 +20,4 @@ export type MessageType =
     | { type: 'updateUserCollaboration', documentId: number, userId: number, canCollaborate: boolean }
     | { type: 'syncState', state: ClassItem[] }
     | { type: 'updateUserMic', documentId: number, userId: number, micEnabled: boolean }
+    | { type: 'updateAnnotations', documentId: number, annotations: Blob }
