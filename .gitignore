@@ -18,3 +18,4 @@ backend/*.pyc
 
 # ShareStates specific
 shareStates/node_modules
+/.idea
