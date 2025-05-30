@@ -3,6 +3,7 @@
   <UserList
       :documentId="documentId"
   />
+  <audio ref="remoteAudio" autoplay></audio>
   <div class="wrapper-ce">
     <div class="inner-wrapper">
 
@@ -80,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, ref} from 'vue';
+import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import SharedbCodeMirror from '../components/SharedbCodeMirror.vue';
 import CodeRunner from '../components/CodeRunner.vue';
 import StickyNavbar from '../components/Navbar.vue';
@@ -166,7 +167,7 @@ const currentClass = computed(() => {
 // 计算当前用户的协作权限
 const canCollaborate = computed(() => {
   const user = currentClass.value?.users.find(u => u.id === Number(userId.value));
-  console.log("当前用户操作权限"+user.canCollaborate)
+  console.log("当前用户操作权限"+user?.canCollaborate)
   return user?.canCollaborate || false;
 });
 
@@ -174,7 +175,6 @@ const canCollaborate = computed(() => {
 const toggleAnnotation = () => {
   isAnnotating.value = !isAnnotating.value;
 };
-
 
 // 结束课堂 (老师)
 const endClass = async () => {
@@ -184,6 +184,143 @@ const endClass = async () => {
 const exitClass = () => {
   router.back();
 }
+
+//语音部分webrtc
+const roomId = computed(() => String(documentId.value));
+const socket = ref<WebSocket | null>(null)
+const localStream = ref<MediaStream | null>(null)
+const peers = ref<{ [key: string]: RTCPeerConnection }>({})
+const joined = ref(false)
+
+const remoteAudio = ref<HTMLAudioElement | null>(null)
+
+// 计算当前用户的语音权限
+const micEnabled = computed(() => {
+  const user = currentClass.value?.users.find(u => u.id === Number(userId.value));
+  console.log("当前用户语音权限"+user?.micEnabled)
+  return user?.micEnabled || false;
+});
+
+function send(message: any) {
+  if (socket.value && socket.value.readyState === WebSocket.OPEN) {
+    socket.value.send(JSON.stringify({ ...message, roomId: roomId.value }))
+  }
+}
+
+function sendSignal(data: any) {
+  send({ type: 'signal', payload: data })
+}
+
+function createPeer(initiator: boolean): RTCPeerConnection {
+  const peer = new RTCPeerConnection()
+  if (localStream.value) {
+    localStream.value.getTracks().forEach(track => peer.addTrack(track, localStream.value!))
+  }
+
+  peer.onicecandidate = (e) => {
+    if (e.candidate) sendSignal(e.candidate)
+  }
+
+  peer.ontrack = (e) => {
+    if (remoteAudio.value) {
+      remoteAudio.value.srcObject = e.streams[0]
+      remoteAudio.value.play()
+    }
+  }
+
+  if (initiator) {
+    peer.createOffer().then(offer => {
+      peer.setLocalDescription(offer)
+      sendSignal(offer)
+    })
+  }
+
+  peer.onconnectionstatechange = () => {
+    if (peer.connectionState === 'disconnected' || peer.connectionState === 'failed') {
+      peer.close()
+    }
+  }
+
+  peers.value['peer'] = peer
+  return peer
+}
+
+function leaveRoom() {
+  if (socket.value && socket.value.readyState === WebSocket.OPEN) {
+    socket.value.send(JSON.stringify({ type: 'leave', roomId: roomId.value }))
+  }
+
+  // 关闭所有 peer 连接
+  Object.values(peers.value).forEach(peer => peer.close())
+  peers.value = {}
+
+  // 停止本地流
+  localStream.value?.getTracks().forEach(track => track.stop())
+  localStream.value = null
+
+  // 关闭 socket
+  socket.value?.close()
+  socket.value = null
+
+  // 重置状态
+  joined.value = false
+  console.log('已退出房间')
+}
+
+async function handleSignal(data: any) {
+  let peer = peers.value['peer']
+  if (!peer) peer = createPeer(false)
+
+  if (data.type === 'offer') {
+    await peer.setRemoteDescription(data)
+    const answer = await peer.createAnswer()
+    await peer.setLocalDescription(answer)
+    sendSignal(answer)
+  } else if (data.type === 'answer') {
+    await peer.setRemoteDescription(data)
+  } else if (data.candidate) {
+    await peer.addIceCandidate(data)
+  }
+}
+
+async function joinRoom() {
+  if (!roomId.value) return
+
+  try {
+    localStream.value = await navigator.mediaDevices.getUserMedia({ audio: true })
+  } catch (err) {
+    console.error('获取麦克风失败：', err)
+    return
+  }
+
+  socket.value = new WebSocket('ws://localhost:3000')
+
+  socket.value.onopen = () => {
+    send({ type: 'join', roomId: roomId.value })
+    joined.value = true
+  }
+
+  socket.value.onmessage = async (event) => {
+    const data = JSON.parse(event.data)
+    switch (data.type) {
+      case 'new-peer':
+        createPeer(true)
+        break
+      case 'signal':
+        handleSignal(data.payload)
+        break
+    }
+  }
+}
+
+// 监听 micEnabled 的变化
+watch(micEnabled, (newVal) => {
+  if (newVal) {
+    joinRoom();
+  } else {
+    leaveRoom();
+  }
+});
 
 onMounted(async () => {
   documentId.value = Number(route.query.documentId);

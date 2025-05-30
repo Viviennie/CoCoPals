@@ -95,7 +95,7 @@ export const useClassStore = defineStore('class', () => {
         })
     }
 
-    // 更新用户协作权限
+    // 更新用户语音权限
     const updateUserMic = (documentId: number, userId: number, micEnabled: boolean) => {
         if (!socket.value || !isConnected.value) {
             console.error('WebSocket not connected')
