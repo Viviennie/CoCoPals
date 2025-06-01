@@ -64,6 +64,18 @@
       </el-button>
     </div>
 
+    <!-- AI助手学情分析 -->
+    <div class="analysis-section">
+      <el-button
+        type="text"
+        :class="{ active: activeSection === 'analysis', 'el-button-custom': true }"
+        @click="setActiveSection('analysis')"
+      >
+      <el-icon><TrendCharts /></el-icon>
+        AI助手学情分析
+      </el-button>
+    </div>
+
      <!-- 编辑邮箱弹窗 -->
      <el-dialog title="修改邮箱" v-model="isDialogVisible">
       <el-input v-model="email" placeholder="请输入新的邮箱地址"></el-input>
@@ -104,10 +116,10 @@
   <script lang="ts" setup>
   import { defineProps, defineEmits,ref } from 'vue';
   import { ElCard, ElButton, ElDialog, ElInput } from 'element-plus';
-  import { User, Clock,Edit, ChatLineSquare, Postcard } from '@element-plus/icons-vue';
+  import { User, Clock,Edit, ChatLineSquare, Postcard, TrendCharts } from '@element-plus/icons-vue';
   import axios from 'axios';
   import { ElMessage } from 'element-plus';
-  import type { UploadFile, UploadProps, UploadRawFile } from 'element-plus'
+  import type { UploadFile, UploadProps, UploadRawFile } from 'element-plus';
   
   const props = defineProps<{
     user: {
@@ -257,7 +269,7 @@
   <style scoped>
   .user-card {
     width: 305px;
-    height: 400px;
+    height: 475px;
     margin: 5px auto;
     border-radius: 30px;
     border-width: 0;

@@ -2,7 +2,7 @@ spring:
   application:
     name: CodeJourney-CoLab-Backend
   datasource:
-    url: jdbc:mysql://47.111.122.28:3306/cocopals
+    url: jdbc:mysql://115.29.227.47:3306/cocopals
     # *改成你自己的本地数据库用户名和密码！
     username: root
     password: SQLPASSWORD
@@ -26,3 +26,8 @@ sharedb:
 #redis:
 #  host: localhost
 #  port: 6379
+
+ai.model.api:
+  url: https://api.siliconflow.cn/v1/chat/completions
+  key: sk-sjfksefvzdcmycjgdgehdhcjjrpblaklsvwjgurufewyzqyo
+  model: deepseek-ai/DeepSeek-R1-0528-Qwen3-8B
