@@ -96,6 +96,11 @@
             <ClassCard/>
           </div>
         </div>
+        <div v-show="activeSection === 'analysis'">
+          <div class="analysis-container">
+            <LearningAnalysis/>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -112,6 +117,7 @@ import Calendar from '../components/Calendar.vue';
 import { Edit } from '@element-plus/icons-vue'
 import ActivityCard from '../components/Activities.vue';
 import ClassCard from '../components/Classes.vue';
+import LearningAnalysis from '../components/LearningAnalysis.vue';
 import { ElCard } from 'element-plus';
 import axios from 'axios';
 import { ElMessage, ElDialog, ElButton } from 'element-plus';

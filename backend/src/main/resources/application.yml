@@ -32,3 +32,8 @@ code-execution:
 #redis:
 #  host: localhost
 #  port: 6379
+
+ai.model.api:
+  url: https://api.siliconflow.cn/v1/chat/completions
+  key: sk-sjfksefvzdcmycjgdgehdhcjjrpblaklsvwjgurufewyzqyo
+  model: deepseek-ai/DeepSeek-R1-0528-Qwen3-8B

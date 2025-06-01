@@ -11,16 +11,16 @@ import java.time.LocalDateTime;
 public class SubmissionDetail extends Submission {
     private String code;
     private String firstFailureOutput;
-    private int questionId;
-    private int userId;
+    private Integer questionId;
+    private Integer userId;
 
     public SubmissionDetail(int attemptNum, LocalDateTime submitTime, String language, int state, int passCount, double totalTime, String code, String firstFailureOutput){
-        this.attemptNum = attemptNum;
-        this.submitTime = submitTime;
-        this.language = language;
-        this.state = state;
-        this.passCount = passCount;
-        this.totalTime = totalTime;
+        this.setAttemptNum(attemptNum);
+        this.setSubmitTime(submitTime);
+        this.setLanguage(language);
+        this.setState(state);
+        this.setPassCount(passCount);
+        this.setTotalTime(totalTime);
         this.code = code;
         this.firstFailureOutput = firstFailureOutput;
     }
