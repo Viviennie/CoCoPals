@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2f190202-df67-4a71-b805-d49b9e99dbaa" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/../webRTC/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../webRTC/server/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/stores/classStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/stores/classStore.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/views/CodeEditor.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/views/CodeEditor.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../webRTC/server/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../webRTC/server/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,6 +67,7 @@
       <workItem from="1748591922913" duration="18000" />
       <workItem from="1748605255424" duration="1932000" />
       <workItem from="1748612061643" duration="740000" />
+      <workItem from="1748756697223" duration="2462000" />
     </task>
     <servers />
   </component>
