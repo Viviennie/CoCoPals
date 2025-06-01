@@ -39,9 +39,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(CsrfConfigurer::disable).cors(cors -> cors.configurationSource(request -> {
             var corsConfiguration = new CorsConfiguration();
-            corsConfiguration.setAllowedOrigins(List.of("*"));
-            corsConfiguration.setAllowedMethods(List.of("*"));
+            corsConfiguration.setAllowedOriginPatterns(List.of("*")); // 使用 setAllowedOriginPatterns 而不是 setAllowedOrigins
+            corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             corsConfiguration.setAllowedHeaders(List.of("*"));
+            corsConfiguration.setAllowCredentials(true); // 允许携带凭证
             return corsConfiguration;
         })).authorizeHttpRequests(authorize -> authorize.requestMatchers(authorizedRoutes().toArray(new String[0])).authenticated().anyRequest().permitAll()).formLogin(FormLoginConfigurer::disable).httpBasic(HttpBasicConfigurer::disable).addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class).build();
     }

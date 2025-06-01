@@ -2,7 +2,7 @@ spring:
   application:
     name: CodeJourney-CoLab-Backend
   datasource:
-    url: jdbc:mysql://47.111.122.28:3306/cocopals
+    url: jdbc:mysql://115.29.227.47:3306/cocopals
     # *改成你自己的本地数据库用户名和密码！
     username: root
     password: SQLPASSWORD
@@ -22,7 +22,13 @@ mybatis:
 
 sharedb:
  url: http://127.0.0.1:4242/share/opendocument
-#
+
+# 代码执行配置
+code-execution:
+  python:
+    path: "F:\\ProgramData\\anaconda3\\python.exe"
+    temp-dir: "F:\\a-zhuanzong\\cocopals\\temp"
+
 #redis:
 #  host: localhost
 #  port: 6379

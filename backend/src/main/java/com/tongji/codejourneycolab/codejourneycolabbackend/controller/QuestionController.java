@@ -1,5 +1,6 @@
 package com.tongji.codejourneycolab.codejourneycolabbackend.controller;
 
+import com.tongji.codejourneycolab.codejourneycolabbackend.dto.CodeExecutionRequest;
 import com.tongji.codejourneycolab.codejourneycolabbackend.entity.*;
 import com.tongji.codejourneycolab.codejourneycolabbackend.mapper.QuestionMapper;
 import com.tongji.codejourneycolab.codejourneycolabbackend.service.codeExecution.PythonExecutionService;
@@ -14,6 +15,9 @@ import java.util.List;
 public class QuestionController {
     @Autowired
     QuestionMapper questionMapper;
+
+    @Autowired
+    PythonExecutionService pythonExecutionService;
 
     //获取题目列表
     @GetMapping("/getList")
@@ -88,7 +92,6 @@ public class QuestionController {
         List<TestCase> testCase = questionMapper.getTestCaseListByQuestionId(questionId);
 //        System.out.println(testCase);
 //        System.out.println(code);
-        PythonExecutionService pythonExecutionService = new PythonExecutionService();
         SubmissionDetail result = pythonExecutionService.executePythonCode(code, testCase);
 //        System.out.println(result);
         result.setAttemptNum(questionMapper.getSubmissionCount(id, questionId) + 1);
@@ -99,9 +102,19 @@ public class QuestionController {
     }
 
     @PostMapping("/runWithInput")
-    public String runQuestion(@RequestParam String code, @RequestParam String input) {
-        System.out.println("test");
-        PythonExecutionService pythonExecutionService = new PythonExecutionService();
-        return pythonExecutionService.executeWithInput(code, input);
+    public String runQuestion(@RequestBody CodeExecutionRequest request) {
+        System.out.println("=== runWithInput 请求开始 ===");
+        System.out.println("接收到的代码: " + request.getCode());
+        System.out.println("接收到的输入: " + request.getInput());
+
+        try {
+            String result = pythonExecutionService.executeWithInput(request.getCode(), request.getInput());
+            System.out.println("执行结果: " + result);
+            return result;
+        } catch (Exception e) {
+            System.err.println("执行出错: " + e.getMessage());
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        }
     }
 }

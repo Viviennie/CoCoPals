@@ -32,7 +32,7 @@ public interface ClassMapper extends BaseMapper<Clas> {
     @Insert("INSERT INTO user_class(user_id,class_id) VALUES(#{userId},#{classId})")
     void joinClass(@Param("userId") Integer userId, @Param("classId") Integer classId);
 
-    @Select("SELECT u.username, u.email " +
+    @Select("SELECT u.id, u.username, u.email " +
             "FROM user_class uc join user u on uc.user_id = u.id " +
             "WHERE uc.class_id = #{classId}")
     List<UserInfoDto> getStuListByClassId(Integer classId);
