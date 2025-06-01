@@ -28,7 +28,7 @@
           </router-link>
   
           <!-- 子菜单 -->
-          <ul v-if="link.subMenu && hoveredIndex === index" class="sub-menu">
+          <ul v-if="link.subMenu && (link as any).subMenu.length && hoveredIndex === index" class="sub-menu">
             <li v-for="(subLink, subIndex) in link.subMenu" :key="subIndex">
               <router-link :to="subLink.path" class="sub-nav-link">
                 {{ subLink.label }}
@@ -44,12 +44,27 @@
   <script lang="ts" setup>
   import { ref, onMounted, watch, onBeforeUnmount, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  
-  const route = useRoute(); // 获取当前路由
-  const router=useRouter();
-  
-  // 导航链接数据 - 翻译后的菜单项
-  const links = [
+
+  // Define interface for navigation links
+  interface NavLink {
+    label: string;
+    path: string;
+    subMenu?: { label: string; path: string }[];
+  }
+
+  const route = useRoute();
+  const router = useRouter();
+
+  // Watch for route changes to update active index
+  watch(
+    () => route.path,
+    () => {
+      setActiveIndexByRoute();
+    }
+  );
+
+  // 导航链接数据
+  const links: NavLink[] = [
     { label: '首页', path: '/' },
     { label: '互动课堂', path: '/editlist' },
     { label: 'OJ在线评测', path: '/problemlist' },
@@ -64,7 +79,7 @@
     //},
     { label: '我的', path: '/profile' },
   ];
-  
+
   // 当前激活的导航项索引
   const activeIndex = ref(0);
   const lastScrollY = ref(0); // 记录上一次滚动的位置
