@@ -205,8 +205,9 @@ public class PythonExecutionService {
             System.out.println(fullCode);
             System.out.println("=== 代码结束 ===");
 
-            // 将代码写入到一个临时Python文件
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(codeFilePath))) {
+            // 将代码写入到一个临时Python文件（使用UTF-8编码）
+            try (BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(codeFilePath), StandardCharsets.UTF_8))) {
                 writer.write(fullCode);
             }
 

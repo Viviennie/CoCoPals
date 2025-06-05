@@ -26,8 +26,8 @@ sharedb:
 # 代码执行配置
 code-execution:
   python:
-    path: "F:\\ProgramData\\anaconda3\\python.exe"
-    temp-dir: "F:\\a-zhuanzong\\cocopals\\temp"
+    path: "python"  # 服务器上的Python路径
+    temp-dir: "C:\\temp\\oj"  # Windows服务器上的临时目录
 
 #redis:
 #  host: localhost
