@@ -1,29 +1,55 @@
-### IntelliJ IDEA ###
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+# Node.js dependencies
+/node_modules/
 
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# Environment variables
+.env
 
-### VS Code ###
+# Build output
+/dist
+/build
+
+# Dependency directories
+jspm_packages/
+
+# IDE / Editor files
 .vscode/
+.idea/
 
-### Mac OS ###
+# OS generated files
 .DS_Store
+Thumbs.db
+
+# Coverage directory used by testing tools
+/coverage
+
+# PM2 runtime files
+pids
+*.pid
+*.seed
+
+# NPM package lock files
+package-lock.json
+yarn.lock
+
+# TypeScript cache (if applicable)
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# eslint cache
+.eslintcache
+
+# Next.js build output (if using Next.js)
+.next/
+
+# Docker files (optional)
+docker-compose.yml
+Dockerfile
