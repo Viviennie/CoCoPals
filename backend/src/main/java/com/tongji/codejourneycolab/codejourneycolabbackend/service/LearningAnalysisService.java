@@ -1,16 +1,20 @@
 package com.tongji.codejourneycolab.codejourneycolabbackend.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tongji.codejourneycolab.codejourneycolabbackend.dto.LearningAnalysisResponseDto;
 import com.tongji.codejourneycolab.codejourneycolabbackend.entity.*;
+import com.tongji.codejourneycolab.codejourneycolabbackend.mapper.LearningAnalysisCacheMapper;
 import com.tongji.codejourneycolab.codejourneycolabbackend.mapper.QuestionMapper;
 import com.tongji.codejourneycolab.codejourneycolabbackend.mapper.SubmissionMapper;
 import com.tongji.codejourneycolab.codejourneycolabbackend.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 import com.tongji.codejourneycolab.codejourneycolabbackend.security.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Service
 public class LearningAnalysisService {
@@ -18,19 +22,78 @@ public class LearningAnalysisService {
     private final UserMapper userMapper;
     private final SubmissionMapper submissionMapper;
     private final QuestionMapper questionMapper;
+    private final LearningAnalysisCacheMapper cacheMapper;
+    private final ObjectMapper objectMapper; // Jackson ObjectMapper
     private final AIModelService aiModelService;
     private final JwtTokenProvider jwtTokenProvider;
 
     public LearningAnalysisService(UserMapper userMapper,
                                    SubmissionMapper submissionMapper,
                                    QuestionMapper questionMapper,
+                                   LearningAnalysisCacheMapper cacheMapper,
+                                   ObjectMapper objectMapper,
                                    AIModelService aiModelService,
                                    JwtTokenProvider jwtTokenProvider) {
         this.userMapper = userMapper;
         this.submissionMapper = submissionMapper;
         this.questionMapper = questionMapper;
+        this.cacheMapper = cacheMapper;
+        this.objectMapper = objectMapper;
         this.aiModelService = aiModelService;
         this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    // get打头的是用户进入页面的获取报告，不是用户点击刷新强制重新生成报告
+    public LearningAnalysisResponseDto getLearningAnalysis(String token) {
+        // 1. 根据token获取用户ID
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            Integer userId = jwtTokenProvider.tryGetIdFromToken(token);
+            // 调用原有逻辑
+            return getLearningAnalysisByUserId(userId);
+        }
+        throw new RuntimeException("Invalid token");
+    }
+    public LearningAnalysisResponseDto getLearningAnalysisByUserId(Integer userId) {
+        // 先检查缓存
+        LearningAnalysisCache cache = cacheMapper.findByUserId(userId);
+
+        // 如果有缓存且在有效期内(7天内)，直接返回
+        if (cache != null && cache.getUpdatedAt().isAfter(LocalDateTime.now().minusDays(7))) {
+            try {
+                Map<String, Object> chartData = objectMapper.readValue(cache.getChartData(), new TypeReference<Map<String, Object>>() {});
+                LearningAnalysisResponseDto response = new LearningAnalysisResponseDto();
+                response.setAnalysisText(cache.getAnalysisText());
+                response.setChartData(chartData);
+                return response;
+            } catch (JsonProcessingException e) {
+                // 继续生成新的分析
+            }
+        }
+
+        // 1. 获取用户的所有提交记录
+        List<Submission> submissions = submissionMapper.findByUserId(userId);
+
+        // 2. 获取相关题目信息
+        Map<Integer, Question> questionMap = getQuestionMap(submissions);
+
+        // 3. 计算统计指标
+        Map<String, Object> statistics = calculateStatistics(submissions, questionMap);
+
+        // 4. 生成大模型提示词
+        String prompt = generatePrompt(userId, statistics);
+
+        // 5. 调用大模型获取分析结果
+        String analysisText = aiModelService.getAnalysis(prompt);
+
+        // 6. 构建响应
+        LearningAnalysisResponseDto response = new LearningAnalysisResponseDto();
+        response.setAnalysisText(analysisText);
+        response.setChartData(statistics);
+
+        updateAnalysisCache(userId, analysisText, statistics);
+
+        return response;
     }
 
     public LearningAnalysisResponseDto generateLearningAnalysis(String token) {
@@ -43,7 +106,6 @@ public class LearningAnalysisService {
         }
         throw new RuntimeException("Invalid token");
     }
-
     public LearningAnalysisResponseDto generateLearningAnalysisByUserId(Integer userId) {
         // 1. 获取用户的所有提交记录
         List<Submission> submissions = submissionMapper.findByUserId(userId);
@@ -65,7 +127,30 @@ public class LearningAnalysisService {
         response.setAnalysisText(analysisText);
         response.setChartData(statistics);
 
+        updateAnalysisCache(userId, analysisText, statistics);
+
         return response;
+    }
+
+    private void updateAnalysisCache(Integer userId, String analysisText, Map<String, Object> chartData) {
+        try {
+            String chartDataJson = objectMapper.writeValueAsString(chartData);
+
+            LearningAnalysisCache cache = new LearningAnalysisCache();
+            cache.setUserId(userId);
+            cache.setAnalysisText(analysisText);
+            cache.setChartData(chartDataJson);
+
+            // 使用MyBatis-Plus的saveOrUpdate方法
+            LearningAnalysisCache existing = cacheMapper.findByUserId(userId);
+            if (existing != null) {
+                cache.setId(existing.getId());
+                cacheMapper.updateById(cache);
+            } else {
+                cacheMapper.insert(cache);
+            }
+        } catch (JsonProcessingException e) {
+        }
     }
 
     private Integer getUserIdFromToken(String token) {
@@ -259,14 +344,15 @@ public class LearningAnalysisService {
 
     private String generatePrompt(Integer userId, Map<String, Object> statistics) {
         StringBuilder prompt = new StringBuilder();
-        prompt.append("你是一位经验丰富的编程教育专家，请根据以下学生学习数据生成详细的分析报告和建议。（只需生成学生学习报告即可，不必重复你的人设，也不必回答我\"好的...\"这种话，不要提示我\"如需进一步分析或提供具体题目代码参考，请告知！\"这种话，只要单纯给我生成报告即可）要求：\n");
+        prompt.append("你是一位经验丰富的编程教育专家，请根据以下学生学习数据生成详细的分析报告和建议。（不必重复你的人设，也不必回答我\"好的，下面是...\"这种话，不要提示我\"如需进一步分析或提供具体题目代码参考，请告知！\"这种话，只要单纯给我生成报告即可，不要表格）\n");
+        prompt.append("格式要求如下：\n");
         prompt.append("1. 总体学习情况概述（300字以内）\n");
         prompt.append("2. 各知识点掌握情况分析（按知识点分类）\n");
         prompt.append("3. 常见错误模式分析（根据错误类型和具体题目）\n");
         prompt.append("4. 针对性改进建议（具体到知识点和题目）\n");
         prompt.append("5. 推荐下一步学习计划（建议若干个具体题目类型或类似题目，只要推荐重点练习的知识点，不要推荐leetcode等具体题目）\n\n");
 
-        prompt.append("学生ID: ").append(userId).append("\n\n");
+        // prompt.append("学生ID: ").append(userId).append("\n\n");
         prompt.append("=== 学习统计数据 ===\n");
 
         // 1. 总体统计

@@ -105,16 +105,17 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, onMounted, nextTick } from 'vue';
+  import { ref, onMounted, nextTick, onUnmounted } from 'vue';
   import axios from 'axios';
   import { ElMessage } from 'element-plus';
   import { Refresh } from '@element-plus/icons-vue';
   import * as echarts from 'echarts';
-  
+
   const loading = ref(false);
   const error = ref('');
   const analysisData = ref(null);
   const errorChart = ref(null);
+  let chartInstance = null; // 添加图表实例引用
 
   onMounted(async () => {
     await fetchAnalysisData();
@@ -125,22 +126,18 @@
   const fetchAnalysisData = async () => {
     loading.value = true;
     error.value = '';
-    
+  
     try {
       const response = await axios.get('http://localhost:8048/api/learning-analysis', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      
+    
       if (response.status === 200) {
         analysisData.value = response.data;
-        // console.log('数据加载完成:', analysisData.value); // 调试日志
-        // console.log('完整数据:', JSON.stringify(analysisData.value, null, 2));
         await nextTick();
-        if (!loading.value && analysisData.value) {
-          initErrorChart(); // 仅在条件满足时初始化图表
-        }
+        initErrorChart();
       }
     } catch (err: any) {
       error.value = err.response?.data?.message || '获取学情分析数据失败';
@@ -149,9 +146,35 @@
       loading.value = false;
     }
   };
+
+  const refreshAnalysis = async () => {
+    loading.value = true;
+    error.value = '';
   
-  const refreshAnalysis = () => {
-    fetchAnalysisData();
+    try {
+      const response = await axios.get('http://localhost:8048/api/learning-analysis/generate', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+    
+      if (response.status === 200) {
+        analysisData.value = response.data;
+        await nextTick();
+        // 销毁旧图表实例
+        if (chartInstance) {
+          chartInstance.dispose();
+          chartInstance = null;
+        }
+        initErrorChart();
+        ElMessage.success('分析数据已刷新');
+      }
+    } catch (err: any) {
+      error.value = err.response?.data?.message || '刷新学情分析数据失败';
+      ElMessage.error('刷新学情分析数据失败');
+    } finally {
+      loading.value = false;
+    }
   };
   
   const getSuccessRateClass = (rate: number) => {
@@ -162,9 +185,16 @@
   };
   
   const formatAnalysisText = (text: string) => {
+    // 1. 先处理 - 列表（在换行前）
+    text = text.replace(/- (.*)/g, '<li>$1</li>')
+               .replace(/\* (.*)/g, '<li>$1</li>')
+               .replace(/\+ (.*)/g, '<li>$1</li>');
+
     return text
       .replace(/#{4}\s*(.*?)\n/g, '<h4>$1</h4>')
-      .replace(/#{1,3}\s*(.*?)\n/g, '<h3>$1</h3>')
+      .replace(/#{3}\s*(.*?)\n/g, '<h3>$1</h3>')
+      .replace(/#{2}\s*(.*?)\n/g, '<h2>$1</h2>')
+      .replace(/#{1}\s*(.*?)\n/g, '<h1>$1</h1>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/---/g, '<hr>')
@@ -173,29 +203,22 @@
   
   const initErrorChart = async () => {
     await nextTick();
-    if (!errorChart.value) {
-      console.error('错误：图表容器未找到');
+  
+    // 确保容器存在且数据可用
+    if (!errorChart.value || !analysisData.value?.chartData?.errorAnalysis) {
+      console.warn('图表初始化条件不满足，等待重试...');
+      setTimeout(initErrorChart, 100); // 100ms后重试
       return;
     }
-    if (!analysisData.value?.chartData?.errorAnalysis) {
-      console.error('错误：errorAnalysis 数据缺失', analysisData.value?.chartData);
-      return;
+
+    // 如果已有实例，先销毁
+    if (chartInstance) {
+      chartInstance.dispose();
     }
-    if (Object.keys(analysisData.value.chartData.errorAnalysis).length === 0) {
-      console.warn('警告：errorAnalysis 数据为空，无法生成图表');
-      return;
-    }
-    console.log('errorChart DOM:', errorChart.value);
-    if (!errorChart.value) {
-      console.warn('图表容器未找到，尝试重试');
-      // setTimeout(initErrorChart, 100); // 100ms 后重试
-      return;
-    }
-    if (!analysisData.value?.chartData?.errorAnalysis) {
-      console.error('错误：errorAnalysis 数据缺失', analysisData.value?.chartData);
-      return;
-    }
-    const chartInstance = echarts.init(errorChart.value);
+
+    // 初始化新实例
+    chartInstance = echarts.init(errorChart.value);
+  
     const errorAnalysis = analysisData.value.chartData.errorAnalysis;
     const errorTypeMap = {
       '2': '编译错误',
@@ -203,10 +226,12 @@
       '4': '运行时错误',
       '5': '超时错误'
     };
+  
     const data = Object.entries(errorAnalysis).map(([type, info]) => ({
       name: errorTypeMap[type] || `错误类型${type}`,
       value: info.count
     }));
+  
     const option = {
       tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
       series: [{
@@ -217,8 +242,20 @@
         color: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4']
       }]
     };
+  
     chartInstance.setOption(option);
-    window.addEventListener('resize', () => chartInstance.resize());
+  
+    // 添加窗口大小变化监听
+    const resizeHandler = () => chartInstance.resize();
+    window.addEventListener('resize', resizeHandler);
+  
+  // 组件卸载时清理
+    onUnmounted(() => {
+      window.removeEventListener('resize', resizeHandler);
+      if (chartInstance) {
+        chartInstance.dispose();
+      }
+    });
   };
 
   </script>
