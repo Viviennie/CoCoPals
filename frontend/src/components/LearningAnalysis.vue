@@ -185,11 +185,6 @@
   };
   
   const formatAnalysisText = (text: string) => {
-    // 1. 先处理 - 列表（在换行前）
-    text = text.replace(/- (.*)/g, '<li>$1</li>')
-               .replace(/\* (.*)/g, '<li>$1</li>')
-               .replace(/\+ (.*)/g, '<li>$1</li>');
-
     return text
       .replace(/#{4}\s*(.*?)\n/g, '<h4>$1</h4>')
       .replace(/#{3}\s*(.*?)\n/g, '<h3>$1</h3>')
@@ -197,6 +192,9 @@
       .replace(/#{1}\s*(.*?)\n/g, '<h1>$1</h1>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/- (.*)/g, '<li>$1</li>')
+      .replace(/\* (.*)/g, '<li>$1</li>')
+      .replace(/\+ (.*)/g, '<li>$1</li>')
       .replace(/---/g, '<hr>')
       .replace(/\n/g, '<br>');
   };
