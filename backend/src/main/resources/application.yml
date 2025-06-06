@@ -21,7 +21,7 @@ mybatis:
   type-aliases-package: com.tongji.codejourneycolab.codejourneycolabbackend.entity
 
 sharedb:
-  url: http://127.0.0.1:4242/share/opendocument
+ url: http://127.0.0.1:4242/share/opendocument
 
 # 代码执行配置
 code-execution:

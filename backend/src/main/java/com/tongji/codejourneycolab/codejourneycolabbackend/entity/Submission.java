@@ -7,10 +7,13 @@ import java.time.LocalDateTime;
 
 @Data
 public class Submission {
-    protected int attemptNum;
-    protected LocalDateTime submitTime;
-    protected String language;
-    protected int state;
-    protected int passCount;
-    protected double totalTime;
+    private Integer id;
+    private Integer userId;
+    private Integer questionId;
+    private Integer attemptNum;
+    private LocalDateTime submitTime;
+    private String language;
+    private Integer state;
+    private Integer passCount;
+    private Double totalTime;
 }

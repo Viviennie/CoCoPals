@@ -70,10 +70,13 @@ const runCode = async () => {
     console.log("用户输入的代码:",props.code);
     console.log("用户输入的参数:", parameters.value); // 打印用户输入的参数
     if(props.selectedLanguage === "python") {
-      const response = await axios.post(`http://localhost:8048/question/runWithInput`, null, {
-        params: {
-          code: props.code,
-          input: parameters.value
+      // 使用FormData或JSON格式发送请求体数据，避免URL长度限制
+      const response = await axios.post(`http://localhost:8048/question/runWithInput`, {
+        code: props.code,
+        input: parameters.value
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
         }
       });
       console.log("成功", response);

@@ -33,7 +33,7 @@
         <el-table-column label="标题" prop="title" />
         <el-table-column
           prop="tag"
-          label="Tag"
+          label="难度"
           :filters="[
               { text: '困难', value: 'hard' },
               { text: '中等', value: 'moderate' },
