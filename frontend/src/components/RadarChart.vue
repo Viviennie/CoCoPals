@@ -10,8 +10,7 @@ import * as echarts from 'echarts';
 
 // 雷达图数据
 const indicatorData = [
-{ name: '互动教学', max: 50 }, 
-
+{ name: '互动教学', max: 50 },
 { name: '团队项目', max: 50 }, 
 { name: '团队竞赛', max: 50 }, 
 { name: '同伴代码\n评审', max: 50 }, 
