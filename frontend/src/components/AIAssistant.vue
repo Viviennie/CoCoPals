@@ -1,44 +1,63 @@
 <template>
-    <div>
-      <!-- 悬浮按钮 -->
-      <button @click="toggleChat" class="chat-button" title="AI小助手">
-        💬
-      </button>
-  
-      <!-- 浮动对话框 -->
-      <div v-if="chatVisible" class="chat-window">
-        <div class="chat-header">
-          AI 助手
-          <button class="chat-close" @click="toggleChat">✖</button>
-        </div>
-  
-        <div class="chat-body">
-          <div
-            v-for="(msg, index) in messages"
-            :key="index"
-            :class="['chat-message', msg.sender === 'user' ? 'chat-user' : 'chat-ai']"
-          >
-            <div class="chat-bubble">{{ msg.text }}</div>
-          </div>
-  
-          <!-- 显示加载动画 -->
-          <div v-if="loading" class="loading-spinner"></div>
-        </div>
-  
-        <form @submit.prevent="sendMessage" class="chat-input-bar">
-          <input
-            v-model="input"
-            type="text"
-            class="chat-input"
-            placeholder="输入内容..."
-          />
-          <button type="submit" class="chat-send" :disabled="loading">发送</button>
-        </form>
+  <div>
+    <!-- 悬浮按钮 -->
+    <button @click="toggleChat" class="chat-button" title="AI小助手">
+      💬
+    </button>
+
+    <!-- 浮动对话框 -->
+    <div v-if="chatVisible" class="chat-window">
+      <div class="chat-header">
+        AI 助手
+        <button class="chat-close" @click="toggleChat">✖</button>
       </div>
+
+      <div class="chat-body">
+        <div
+          v-for="(msg, index) in messages"
+          :key="index"
+          :class="['chat-message', msg.sender === 'user' ? 'chat-user' : 'chat-ai']"
+        >
+          <div class="chat-bubble">{{ msg.text }}</div>
+        </div>
+
+        <!-- 显示加载动画 -->
+        <div v-if="loading" class="loading-spinner"></div>
+      </div>
+
+      <form @submit.prevent="sendMessage" class="chat-input-bar">
+        <input
+          v-model="input"
+          type="text"
+          class="chat-input"
+          placeholder="输入内容..."
+          :disabled="chatLoading"
+        />
+        
+        <!-- 语音识别按钮 -->
+        <ElButton
+          class="button"
+          @click="toggleRecognition">
+          <ElIcon v-if="!isRecognizing" :style="{ fontSize: '24px' }">
+            <Microphone />
+          </ElIcon>
+          <ElIcon v-if="isRecognizing" :style="{ fontSize: '24px' }">
+            <School />
+          </ElIcon>
+        </ElButton>
+        
+        <button type="submit" class="chat-send" :disabled="loading">
+          发送
+        </button>
+      </form>
     </div>
-  </template>
+  </div>
+</template>
+
 <script setup>
 import { ref } from 'vue'
+import { ElButton, ElMessage, ElIcon } from 'element-plus'
+import { Microphone, School } from '@element-plus/icons-vue'
 
 const props = defineProps({
   question: String,
@@ -50,6 +69,9 @@ const chatVisible = ref(false)
 const input = ref('')
 const messages = ref([])
 const loading = ref(false)  // 新增：加载状态
+const chatLoading = ref(false)
+const isRecognizing = ref(false)
+let recognition = null
 
 const toggleChat = () => {
   chatVisible.value = !chatVisible.value
@@ -108,7 +130,55 @@ const sendMessage = async () => {
     loading.value = false
   }
 }
+
+// 语音识别功能
+const toggleRecognition = () => {
+  if (isRecognizing.value) {
+    recognition.stop()
+    isRecognizing.value = false
+    chatLoading.value = false
+  } else {
+    if (!recognition) {
+      if (!('webkitSpeechRecognition' in window)) {
+        ElMessage.error('您的浏览器不支持语音识别。请使用支持 Web Speech API 的浏览器。')
+        return
+      }
+      
+      recognition = new webkitSpeechRecognition()
+      recognition.lang = 'zh-CN'
+      recognition.continuous = true
+      recognition.interimResults = true
+      recognition.maxAlternatives = 1
+      chatLoading.value=true
+      recognition.onstart = ()=>{
+         chatLoading.value=false
+      }
+
+      recognition.onresult = (event) => {
+        const lastResult = event.results[event.results.length - 1]
+        input.value = lastResult[0].transcript
+      }
+
+      recognition.onend = () => {
+        isRecognizing.value = false
+        chatLoading.value = false
+      }
+
+      recognition.onerror = (event) => {
+        ElMessage.error(`语音识别错误: ${event.error}`)
+        isRecognizing.value = false
+        chatLoading.value = false
+      }
+    }
+    
+    input.value = '' // 清空之前的识别结果
+    isRecognizing.value = true
+    chatLoading.value = true
+    recognition.start()
+  }
+}
 </script>
+
 <style scoped>
 .chat-button {
   position: fixed;
@@ -220,6 +290,8 @@ const sendMessage = async () => {
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  margin-right: 8px;
+  
 }
 
 .chat-send {
@@ -247,9 +319,15 @@ const sendMessage = async () => {
   align-self: center;
 }
 
+.button{
+    background-image: url('/1.png');
+  background-size: cover;
+  background-position: center;
+  background-color: white;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 </style>
-  

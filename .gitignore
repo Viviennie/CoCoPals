@@ -18,3 +18,10 @@ backend/*.pyc
 
 # ShareStates specific
 shareStates/node_modules
+shareStates/.idea/
+
+# WebRTC specific
+webRTC/node_modules
+webRTC/.idea/
+
+.idea/
