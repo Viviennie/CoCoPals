@@ -15,6 +15,9 @@ interface ClassItem {
     startTime: Date
     endTime: Date | null
     users: User[]
+    annotations: ArrayBuffer
+    scrollLeft: number
+    scrollTop: number
 }
 
 export const useClassStore = defineStore('class', () => {
@@ -92,7 +95,7 @@ export const useClassStore = defineStore('class', () => {
         })
     }
 
-    // 更新用户协作权限
+    // 更新用户语音权限
     const updateUserMic = (documentId: number, userId: number, micEnabled: boolean) => {
         if (!socket.value || !isConnected.value) {
             console.error('WebSocket not connected')
@@ -105,6 +108,31 @@ export const useClassStore = defineStore('class', () => {
             micEnabled
         })
     }
+
+    const updateAnnotations = (documentId: number, annotations: Blob) => {
+        if (!socket.value || !isConnected.value) {
+            console.error('WebSocket not connected')
+            return
+        }
+        socket.value.emit('message', {
+            type: 'updateAnnotations',
+            documentId,
+            annotations
+        })
+    }
+
+    const updateScroll = (documentId: number, scrollLeft: number, scrollTop: number) => {
+        if (!socket.value || !isConnected.value) {
+            console.error('WebSocket not connected')
+            return
+        }
+        socket.value.emit('message', {
+            type: 'updateScroll',
+            documentId,
+            scrollLeft,
+            scrollTop
+        })
+    }
     // 组件挂载时初始化 WebSocket
     initWebSocket()
 
@@ -114,6 +142,8 @@ export const useClassStore = defineStore('class', () => {
         addClass,
         endClass,
         updateUserCollaboration,
-        updateUserMic
+        updateUserMic,
+        updateAnnotations,
+        updateScroll
     }
 })

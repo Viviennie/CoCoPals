@@ -66,7 +66,7 @@
   import { useRoute } from 'vue-router';
   
   const route = useRoute(); 
-  const value = ref('Notice')
+  const value = ref('ClassChat')
   
   const options = [
     {
@@ -91,7 +91,7 @@
     },
   ]
 
-  const activeSection = ref('Notice');
+  const activeSection = ref('ClassChat');
   // 设置当前激活的展示内容
   const setActiveSection = (section: string) => {
     activeSection.value = section;

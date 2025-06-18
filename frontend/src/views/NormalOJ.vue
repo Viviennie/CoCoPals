@@ -14,7 +14,6 @@
         <el-scrollbar class="problem" v-if="currentProblem">
           <h2>{{ currentProblem.title }}</h2>
           <MarkdownRenderer :markdown-text="currentProblem.description" />
-          <el-button type="text">查看答案</el-button>
         </el-scrollbar>
   
         <div class="coding">
@@ -56,7 +55,7 @@ import CodeRunner from '../components/CodeRunner.vue';
 import CodeReviewer from '../components/CodeReviewer.vue'; 
 import StickyNavbar from '../components/Navbar.vue';
 import Sidebar from '../components/Sidebar.vue';
-import AIAssistant from '../components/AIAssistant.vue'
+import AIAssistant from '../components/AIAssistant.vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 

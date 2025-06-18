@@ -3,7 +3,7 @@
   <div class="wrapper-el">
     <div class="wrapper-el2">
     <div class="title">
-      <h1>最近作品</h1>
+      <h1>最近课堂</h1>
       <div>
           <el-button
               class="invited-button"
@@ -12,7 +12,7 @@
               :icon="Checked"
               @click="openDialog_join()"
           >
-              加入协作
+              加入课堂
           </el-button>
           <el-button
               class="add-button"
@@ -21,18 +21,18 @@
               :icon="Plus"
               @click="openDialog_add()"
           >
-              新建文件
+              新建课堂
           </el-button>
       </div>
     </div>
 
     <!-- 新建文件弹窗 -->
     <el-dialog
-      title="创建文件"
+      title="创建课堂"
       v-model="isDialogVisible_add"
       width="30%"
     >
-      <el-input v-model="filename" placeholder="请输入文件名"></el-input>
+      <el-input v-model="filename" placeholder="请输入课堂名称"></el-input>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="isDialogVisible_add = false">取消</el-button>
@@ -43,11 +43,11 @@
 
     <!-- 删除文件弹窗 -->
     <el-dialog
-      title="删除文件"
+      title="删除课堂记录"
       v-model="isDialogVisible_delete"
       width="30%"
     >
-      <p>确认要删除此文件吗？</p>
+      <p>确认要删除此记录吗？</p>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="isDialogVisible_delete = false">取消</el-button>
@@ -58,7 +58,7 @@
 
     <!-- 接受邀请弹窗 -->
     <el-dialog
-      title="加入协作"
+      title="加入课堂"
       v-model="isDialogVisible_join"
       width="30%"
     >
@@ -73,8 +73,8 @@
 
     <div class="table">
       <el-table :data="filterTableData" stripe="true" style="width: 100%">
-        <el-table-column label="文件ID" prop="id" />
-        <el-table-column label="文件名" prop="title" />
+        <el-table-column label="课堂ID" prop="id" />
+        <el-table-column label="课堂名称" prop="title" />
         <el-table-column label="创建时间" prop="createTime" />
         <el-table-column label="最后修改" prop="lastModifiedTime" />
         <el-table-column label="创建者" prop="ownerName" />
@@ -156,7 +156,7 @@ const openDialog_add = () => {
 const handleAdd = async () => {
   if (!filename.value.trim()) {
     ElMessage({
-      message: '文件名不能为空！',
+      message: '课堂名不能为空！',
       type: 'warning',
       duration: 3000, 
     })
@@ -184,7 +184,7 @@ const handleAdd = async () => {
   } catch (error:any) {
     console.error("Error:", error.response || error.message);
     ElMessage({
-      message: '文件创建失败',
+      message: '课堂创建失败',
       type: 'error',
       duration: 3000, 
     })
@@ -234,7 +234,7 @@ const handleInvitation = async () => {
   } catch (error:any) {
     console.error("Error:", error.response || error.message);
     ElMessage({
-      message: '加入文件失败',
+      message: '加入课堂失败',
       type: 'error',
       duration: 3000, 
     })
@@ -313,11 +313,11 @@ const fetchFileList = async()=> {
       title: item.title
     }));
   } catch (error: any) {
-    console.error('获取文件列表失败:', error);
+    console.error('获取课堂列表失败:', error);
     // 显示具体错误信息
     if (error.response) {
       console.error('服务器返回错误:', error.response.data);
-      ElMessage.error(`获取文件列表失败: ${error.response.data.message || error.response.status}`);
+      ElMessage.error(`获取课堂列表失败: ${error.response.data.message || error.response.status}`);
     }
   }
 }

@@ -7,7 +7,7 @@
     <nav class="sidebar" :class="{ open: isOpen }">
       <!-- 菜单标题 -->
       <div class="sidebar-header">
-        <h2>用户列表</h2>
+        <h2>在线列表</h2>
       </div>
 
       <ul class="user-item">
